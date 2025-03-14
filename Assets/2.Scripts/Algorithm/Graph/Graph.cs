@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public class Graph
+public static class Graph
 {
-    public int[,] ArrayGraph { get; } =
+    public static int[,] ArrayGraph { get; } =
     {
         {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 0 → 1, 2
         {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // 1 → 3, 4
@@ -19,7 +18,7 @@ public class Graph
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}  // 11 (자식 없음)
     };
 
-    public List<List<int>> ListGraph { get; } = new List<List<int>>()
+    public static List<List<int>> ListGraph { get; } = new List<List<int>>()
     {
         new List<int>() { 1, 2 },
         new List<int>() { 3, 4 },
@@ -35,12 +34,6 @@ public class Graph
         new List<int>()
     };
 
-    public readonly int ColLength;
-    public readonly int RowLength;
-
-    public Graph()
-    {
-        ColLength = ArrayGraph.GetLength(0);
-        RowLength = ArrayGraph.GetLength(1);
-    }
+    public static int ColLength => ArrayGraph.GetLength(0);
+    public static int RowLength => ArrayGraph.GetLength(1);
 }
