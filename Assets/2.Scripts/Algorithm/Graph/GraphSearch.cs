@@ -15,6 +15,9 @@ public class GraphSearch : MonoBehaviour
     [Header("UI")] 
     [SerializeField] private TMP_InputField startNode;
 
+    [Header("Setting")] 
+    [SerializeField] private int delayTime = 800;
+
     private int[,] _arrayGraph;
     private List<List<int>> _listGraph;
     private bool[] _visited;
@@ -40,7 +43,7 @@ public class GraphSearch : MonoBehaviour
             var node = stack.Pop();
             cursorObj.transform.position = graphData.List[node].transform.position;
 
-            await UniTask.Delay(800);
+            await UniTask.Delay(delayTime);
 
             for (var i = _arrayGraph.GetLength(1) - 1; i >= 0; --i)
             {
@@ -65,7 +68,7 @@ public class GraphSearch : MonoBehaviour
             var node = stack.Pop();
             cursorObj.transform.position = graphData.List[node].transform.position;
             
-            await UniTask.Delay(800);
+            await UniTask.Delay(delayTime);
 
             for (var i = _listGraph[node].Count - 1; i >= 0; --i)
             {
@@ -94,7 +97,7 @@ public class GraphSearch : MonoBehaviour
             var node = queue.Dequeue();
             cursorObj.transform.position = graphData.List[node].transform.position;
 
-            await UniTask.Delay(800);
+            await UniTask.Delay(delayTime);
 
             for (var i = 0; i < _arrayGraph.GetLength(1); ++i)
             {
@@ -119,7 +122,7 @@ public class GraphSearch : MonoBehaviour
             var node = queue.Dequeue();
             cursorObj.transform.position = graphData.List[node].transform.position;
 
-            await UniTask.Delay(800);
+            await UniTask.Delay(delayTime);
 
             foreach (var next in _listGraph[node])
             {
