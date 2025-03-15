@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GraphGenerator : MonoBehaviour
 {
     [Header("Component")] 
     [SerializeField] private GameObject nodeObj;
+    [SerializeField] private GraphData graphData;
 
     [Header("Line Setting")] 
     [SerializeField] private Material lineMat;
@@ -17,14 +18,7 @@ public class GraphGenerator : MonoBehaviour
     [SerializeField] private int zOffset;
     [SerializeField] private float depthInterval = 1;
 
-    private List<Node> _nodeList;
-
-    private void Start()
-    {
-        GenerateGraph();
-    }
-
-    private void GenerateGraph()
+    public void GenerateGraph()
     {
         var graph = Graph.ArrayGraph;
         var nodeDepths = new Dictionary<int, int>() { { 0, 0 } };
@@ -39,38 +33,49 @@ public class GraphGenerator : MonoBehaviour
             {
                 if(graph[col, row] != 1) continue;
                 
-                childList.Add(_nodeList[row]);
+                childList.Add(graphData.List[row].GetComponent<Node>());
                 nodeDepths[row] = nodeDepths[col] + 1;
             }
             
             // 자식 노드 위치 설정
             if(childList.Count == 0) continue;
 
-            var parentPos = _nodeList[col].transform.position;
+            var parentPos = graphData.List[col].transform.position;
             var depth = nodeDepths[col];
             var dynamicXOffset = xOffset / (depth + depthInterval);
 
             for (var i = 0; i < childList.Count; ++i)
             {
                 var xPos = parentPos.x + (i - (childList.Count - 1) / 2f) * dynamicXOffset;
-                _nodeList[childList[i].Index].SetPosition(new Vector3(xPos, 0, parentPos.z - zOffset));
+                graphData.List[childList[i].Index].
+                    GetComponent<Node>().SetPosition(new Vector3(xPos, 0, parentPos.z - zOffset));
             }
-            
-            _nodeList[col].LinkLineRenderer(childList, lineMat, lineWidth);
+
+            graphData.List[col].GetComponent<Node>()
+                .LinkLineRenderer(childList, lineMat, lineWidth);
         }
+    }
+
+    public void DestroyGraph()
+    {
+        for (var i = transform.childCount - 1; i >= 0; --i)
+        {
+            DestroyImmediate(graphData.List[i]);
+        }
+        
+        graphData.List.Clear();
     }
 
     private void CreateNodes()
     {
-        _nodeList = new List<Node>();
+        graphData.List = new List<GameObject>();
 
         for (var i = 0; i < Graph.ArrayGraph.GetLength(0); ++i)
         {
-            var node = Instantiate(nodeObj).GetComponent<Node>();
-            node.transform.SetParent(transform);
-            node.SetIndexNumber(i);
+            var node = Instantiate(nodeObj, transform);
+            node.GetComponent<Node>().SetIndexNumber(i);
             
-            _nodeList.Add(node);
+            graphData.List.Add(node);
         }
     }
 }

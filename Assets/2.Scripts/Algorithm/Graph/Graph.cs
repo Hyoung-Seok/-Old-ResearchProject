@@ -33,7 +33,4 @@ public static class Graph
         new List<int>(),
         new List<int>()
     };
-
-    public static int ColLength => ArrayGraph.GetLength(0);
-    public static int RowLength => ArrayGraph.GetLength(1);
 }

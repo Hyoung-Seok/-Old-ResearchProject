@@ -285,10 +285,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeObj: {fileID: 5487810785942983086, guid: 99b219570cc7b5c4591bc16e81585414, type: 3}
+  graphData: {fileID: 11400000, guid: 662112257d2928142a930620357d8e3a, type: 2}
   lineMat: {fileID: 2100000, guid: e63d2ec65431c8c428f479177f5b249e, type: 2}
   lineWidth: 0.5
-  xOffset: 10
+  xOffset: 30
   zOffset: 10
+  depthInterval: 0.5
 --- !u!1 &2013138724
 GameObject:
   m_ObjectHideFlags: 0
