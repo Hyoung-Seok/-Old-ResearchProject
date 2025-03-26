@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using PathFinding;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class TileGenerator : MonoBehaviour
@@ -15,7 +17,9 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float offset = 0.5f;
-    
+    [SerializeField] private int delayTime = 500;
+
+    private bool _isSkip = false;
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
     private int[,] _tile;
@@ -42,8 +46,9 @@ public class TileGenerator : MonoBehaviour
         GenerateTile();
     }
 
-    public void StartPathFinding_BFS()
+    public async void StartPathFinding_BFS()
     {
+        _isSkip = false;
         var path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
 
         if (path == null)
@@ -55,11 +60,17 @@ public class TileGenerator : MonoBehaviour
         {
             var index = path[i].Item1 * width + path[i].Item2;
             transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+
+            if (_isSkip == false)
+            {
+                await UniTask.Delay(delayTime);
+            }
         }
     }
 
-    public void StartPathFinding_Dijkstra()
+    public async void StartPathFinding_Dijkstra()
     {
+        _isSkip = false;
         var path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
 
         if (path == null)
@@ -71,7 +82,17 @@ public class TileGenerator : MonoBehaviour
         {
             var index = path[i].Item1 * width + path[i].Item2;
             transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+            
+            if (_isSkip == false)
+            {
+                await UniTask.Delay(delayTime);
+            }
         }
+    }
+
+    public void SkipButtonClickEvent()
+    {
+        _isSkip = true;
     }
 
     private void Update()

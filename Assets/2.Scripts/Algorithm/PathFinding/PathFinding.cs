@@ -2,10 +2,8 @@ using System.Collections.Generic;
 
 namespace PathFinding
 {
-    #region BFS
     public class BFS
     {
-        // 차례대로 위,아래,왼쪽,오른쪽,좌상,좌하,우상,우하
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
@@ -60,7 +58,6 @@ namespace PathFinding
             return null;
         }
     }
-    #endregion
 
     public class Dijkstra
     {
