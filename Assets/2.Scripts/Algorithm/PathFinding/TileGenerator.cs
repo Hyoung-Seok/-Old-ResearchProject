@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PathFinding;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -25,7 +26,8 @@ public class TileGenerator : MonoBehaviour
     private GameObject _prevStartTile;
     private GameObject _prevEndTile;
 
-    private PathFinding.BFS _pathFinding;
+    private BFS _bfs;
+    private Dijkstra _dijkstra;
     
     private void Start()
     {
@@ -33,7 +35,8 @@ public class TileGenerator : MonoBehaviour
         if (height % 2 == 0) height -= 1;
 
         _mainCam = Camera.main;
-        _pathFinding = new PathFinding.BFS();
+        _bfs = new BFS();
+        _dijkstra = new Dijkstra();
         
         SetTileArray();
         GenerateTile();
@@ -41,7 +44,23 @@ public class TileGenerator : MonoBehaviour
 
     public void StartPathFinding_BFS()
     {
-        var path = _pathFinding.BFS_PathFinding(_tile, _startPos, _endPos);
+        var path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+
+        if (path == null)
+        {
+            return;
+        }
+
+        for (var i = 1; i < path.Count - 1; ++i)
+        {
+            var index = path[i].Item1 * width + path[i].Item2;
+            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+        }
+    }
+
+    public void StartPathFinding_Dijkstra()
+    {
+        var path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
 
         if (path == null)
         {
