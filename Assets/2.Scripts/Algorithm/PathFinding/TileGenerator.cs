@@ -25,7 +25,7 @@ public class TileGenerator : MonoBehaviour
     private GameObject _prevStartTile;
     private GameObject _prevEndTile;
 
-    private PathFinding _pathFinding;
+    private PathFinding.BFS _pathFinding;
     
     private void Start()
     {
@@ -33,7 +33,7 @@ public class TileGenerator : MonoBehaviour
         if (height % 2 == 0) height -= 1;
 
         _mainCam = Camera.main;
-        _pathFinding = new PathFinding();
+        _pathFinding = new PathFinding.BFS();
         
         SetTileArray();
         GenerateTile();
@@ -42,6 +42,11 @@ public class TileGenerator : MonoBehaviour
     public void StartPathFinding()
     {
         var path = _pathFinding.BFS_PathFinding(_tile, _startPos, _endPos);
+
+        if (path == null)
+        {
+            return;
+        }
 
         for (var i = 1; i < path.Count - 1; ++i)
         {
