@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
 public class TileGenerator : MonoBehaviour
 {
     [Header("Component")] 
@@ -19,14 +18,77 @@ public class TileGenerator : MonoBehaviour
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
     private int[,] _tile;
+    private Camera _mainCam;
+
+    private (int, int) _startPos;
+    private (int, int) _endPos;
+    private GameObject _prevStartTile;
+    private GameObject _prevEndTile;
+
+    private PathFinding _pathFinding;
     
     private void Start()
     {
         if (width % 2 == 0) width -= 1;
         if (height % 2 == 0) height -= 1;
+
+        _mainCam = Camera.main;
+        _pathFinding = new PathFinding();
         
         SetTileArray();
         GenerateTile();
+    }
+
+    public void StartPathFinding()
+    {
+        var path = _pathFinding.BFS_PathFinding(_tile, _startPos, _endPos);
+
+        for (var i = 1; i < path.Count - 1; ++i)
+        {
+            var index = path[i].Item1 * width + path[i].Item2;
+            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out var hit))
+            {
+                var obj = hit.collider.gameObject;
+                _startPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
+
+                if (_prevStartTile != null)
+                {
+                    _prevStartTile.GetComponent<Renderer>().material.color = Color.white;
+                }
+
+                obj.GetComponent<Renderer>().material.color = Color.red;
+                _prevStartTile = obj;
+            }
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out var hit))
+            {
+                var obj = hit.collider.gameObject;
+                _endPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
+
+                if (_prevEndTile != null)
+                {
+                    _prevEndTile.GetComponent<Renderer>().material.color = Color.white;
+                }
+
+                obj.GetComponent<Renderer>().material.color = Color.blue;
+                _prevEndTile = obj;
+            }
+        }
     }
 
     private void SetTileArray()
@@ -103,5 +165,13 @@ public class TileGenerator : MonoBehaviour
             pos.x = 0;
             pos.z -= offset;
         }
+    }
+
+    private (int, int) ConvertChildIndexToCoordinate(int index)
+    {
+        var yPos = index / width;
+        var xPos = index % width;
+
+        return (yPos, xPos);
     }
 }
