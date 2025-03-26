@@ -95,44 +95,41 @@ public class TileGenerator : MonoBehaviour
         _isSkip = true;
     }
 
-    private void Update()
+    public void OnMouseLeftButtonClickEvent()
     {
-        if (Input.GetMouseButton(0))
+        var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out var hit))
         {
-            var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+            var obj = hit.collider.gameObject;
+            _startPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (Physics.Raycast(ray, out var hit))
+            if (_prevStartTile != null)
             {
-                var obj = hit.collider.gameObject;
-                _startPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
-
-                if (_prevStartTile != null)
-                {
-                    _prevStartTile.GetComponent<Renderer>().material.color = Color.white;
-                }
-
-                obj.GetComponent<Renderer>().material.color = Color.red;
-                _prevStartTile = obj;
+                _prevStartTile.GetComponent<Renderer>().material.color = Color.white;
             }
+
+            obj.GetComponent<Renderer>().material.color = Color.red;
+            _prevStartTile = obj;
         }
+    }
 
-        if (Input.GetMouseButton(1))
+    public void OnMouseRightButtonClickEvent()
+    {
+        var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out var hit))
         {
-            var ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+            var obj = hit.collider.gameObject;
+            _endPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (Physics.Raycast(ray, out var hit))
+            if (_prevEndTile != null)
             {
-                var obj = hit.collider.gameObject;
-                _endPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
-
-                if (_prevEndTile != null)
-                {
-                    _prevEndTile.GetComponent<Renderer>().material.color = Color.white;
-                }
-
-                obj.GetComponent<Renderer>().material.color = Color.blue;
-                _prevEndTile = obj;
+                _prevEndTile.GetComponent<Renderer>().material.color = Color.white;
             }
+
+            obj.GetComponent<Renderer>().material.color = Color.blue;
+            _prevEndTile = obj;
         }
     }
 
