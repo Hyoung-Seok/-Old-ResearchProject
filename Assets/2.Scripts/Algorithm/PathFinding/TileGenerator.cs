@@ -39,7 +39,7 @@ public class TileGenerator : MonoBehaviour
         GenerateTile();
     }
 
-    public void StartPathFinding()
+    public void StartPathFinding_BFS()
     {
         var path = _pathFinding.BFS_PathFinding(_tile, _startPos, _endPos);
 
