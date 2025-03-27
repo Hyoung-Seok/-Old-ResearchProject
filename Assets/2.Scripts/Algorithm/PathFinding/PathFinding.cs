@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PathFinding
 {
@@ -123,6 +124,126 @@ namespace PathFinding
             }
 
             return null;
+        }
+    }
+
+    public class AStar
+    {
+        private const int WEIGHT = 10;
+        private const int DIAGONAL_WEIGHT = 14;
+        
+        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
+        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
+
+        public List<(int, int)> AStar_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        {
+            var height = tile.GetLength(0);
+            var width = tile.GetLength(1);
+
+            var parent = new (int, int)[height, width];
+            var visited = new bool[height, width];
+            var openNode = new PriorityQueue<NodeData, int>();
+            var nodeDic = new Dictionary<(int, int), NodeData>();
+
+            var nodeData = new NodeData(start, 0, 0);
+            openNode.Enqueue(nodeData, 0);
+            nodeDic.Add(nodeData.Pos, nodeData);
+
+            while (openNode.Count > 0)
+            {
+                openNode.TryDequeue(out var curNode, out var f);
+
+                if (curNode.Pos == end)
+                {
+                    return FindPath.FindShortPath(parent, start, end);
+                }
+
+                var cord = curNode.Pos;
+                visited[cord.Item1, cord.Item2] = true;
+                
+                // 노드 탐색 시작
+                for (var i = 0; i < _dx.Length; ++i)
+                {
+                    var xPos = cord.Item2 + _dx[i];
+                    var yPos = cord.Item1 + _dy[i];
+                    
+                    // 이동 가능한 타일인지 탐색
+                    if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
+                    if(visited[yPos,xPos] == true || tile[yPos, xPos] == 0) continue;
+
+                    NodeData newNode;
+                    
+                    // 이미 노드가 존재한다면
+                    if (nodeDic.TryGetValue((yPos, xPos), out var neighbor) == true)
+                    {
+                        // 인접한 노드가 상하좌우라면 10, 대각선이라면 14를 기존 g(n)에 더함
+                        var g = (i < 4) ? neighbor.G + WEIGHT : neighbor.G + DIAGONAL_WEIGHT;
+                        
+                        // 현재 노드를 지나쳐 갈 경우의 g(n)값이 더 낮다면
+                        if (g < neighbor.G)
+                        {
+                            // g값하고 h값만 갱신하면 된다?
+                            neighbor.G = g;
+                            
+                            // 인접 노드의 부모 노드를 현재 노드로 갱신
+                            parent[neighbor.Pos.Item1, neighbor.Pos.Item2] = cord;
+                            openNode.Enqueue(neighbor, neighbor.GetTotalWeight());
+                            
+                            // 이미 노드가 존재한다면, 아래의 코드는 실행할 필요 없음
+                            continue;
+                        }
+                    }
+                    
+                    // 상하좌우인 경우 가중치 값 갱신
+                    var h = CalculateHeuristic((xPos, yPos), end);;
+                    
+                    if (i < 4)
+                    {
+                        newNode = new NodeData((xPos, yPos), curNode.G + WEIGHT, h);
+                    }
+                    // 대각선인 경우 가중치 값 계산
+                    else
+                    {
+                        // 이동 불가능한 경우라면
+                        if( 0 > yPos + _dy[i] || yPos + _dy[i] <= height || 0 > xPos + _dx[i] || xPos + _dx[i] <= width) continue;
+                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0) continue;
+                        
+                        newNode = new NodeData((xPos, yPos), curNode.G + DIAGONAL_WEIGHT, h);
+                    }
+                    
+                    openNode.Enqueue(newNode, newNode.GetTotalWeight());
+                    nodeDic.Add(newNode.Pos, newNode);
+                }
+            }
+
+            return null;
+        }
+
+        private int CalculateHeuristic((int, int) start, (int, int) end)
+        {
+            var dy = Mathf.Abs(start.Item1 - end.Item1);
+            var dx = Mathf.Abs(start.Item2 - end.Item2);
+
+            return (dx + dy) / 2;
+        }
+    }
+
+    public class NodeData
+    {
+        public int G;
+        public int H;
+        public (int, int) Pos;
+
+        public NodeData((int, int) pos, int g, int h)
+        {
+            Pos = pos;
+            G = g;
+            H = h;
+        }
+
+        public int GetTotalWeight()
+        {
+            return G + H;
         }
     }
 

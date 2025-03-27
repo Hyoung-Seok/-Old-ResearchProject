@@ -32,6 +32,7 @@ public class TileGenerator : MonoBehaviour
 
     private BFS _bfs;
     private Dijkstra _dijkstra;
+    private AStar _aStar;
     
     private void Start()
     {
@@ -39,8 +40,10 @@ public class TileGenerator : MonoBehaviour
         if (height % 2 == 0) height -= 1;
 
         _mainCam = Camera.main;
+        
         _bfs = new BFS();
         _dijkstra = new Dijkstra();
+        _aStar = new AStar();
         
         SetTileArray();
         GenerateTile();
@@ -69,6 +72,28 @@ public class TileGenerator : MonoBehaviour
     }
 
     public async void StartPathFinding_Dijkstra()
+    {
+        _isSkip = false;
+        var path = _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+
+        if (path == null)
+        {
+            return;
+        }
+
+        for (var i = 1; i < path.Count - 1; ++i)
+        {
+            var index = path[i].Item1 * width + path[i].Item2;
+            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+            
+            if (_isSkip == false)
+            {
+                await UniTask.Delay(delayTime);
+            }
+        }
+    }
+
+    public async void StartPathFinding_AStar()
     {
         _isSkip = false;
         var path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
