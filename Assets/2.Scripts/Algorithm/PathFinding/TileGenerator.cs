@@ -23,10 +23,11 @@ public class TileGenerator : MonoBehaviour
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
     private int[,] _tile;
+    private Material[,] _tileMat;
     private Camera _mainCam;
 
-    private (int, int) _startPos;
-    private (int, int) _endPos;
+    private (int, int) _startPos = (-1, -1);
+    private (int, int) _endPos = (-1, -1);
     private GameObject _prevStartTile;
     private GameObject _prevEndTile;
 
@@ -44,77 +45,48 @@ public class TileGenerator : MonoBehaviour
         _bfs = new BFS();
         _dijkstra = new Dijkstra();
         _aStar = new AStar();
+
+        _aStar.ChangeTileColor += ChangeTileColor;
         
         SetTileArray();
         GenerateTile();
     }
 
-    public async void StartPathFinding_BFS()
+    public async void StartPathFinding(int type)
     {
-        _isSkip = false;
-        var path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
-
-        if (path == null)
+        if (_startPos.Item1 == -1 || _endPos.Item1 == -1)
         {
             return;
         }
-
-        for (var i = 1; i < path.Count - 1; ++i)
-        {
-            var index = path[i].Item1 * width + path[i].Item2;
-            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
-
-            if (_isSkip == false)
-            {
-                await UniTask.Delay(delayTime);
-            }
-        }
-    }
-
-    public async void StartPathFinding_Dijkstra()
-    {
+        
         _isSkip = false;
-        var path = _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+        List<(int, int)> path = null;
 
-        if (path == null)
+        switch (type)
         {
-            return;
-        }
-
-        for (var i = 1; i < path.Count - 1; ++i)
-        {
-            var index = path[i].Item1 * width + path[i].Item2;
-            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+            case (int)EFindingType.BFS:
+                path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                break;
             
-            if (_isSkip == false)
-            {
-                await UniTask.Delay(delayTime);
-            }
-        }
-    }
-
-    public async void StartPathFinding_AStar()
-    {
-        _isSkip = false;
-        var path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
-
-        if (path == null)
-        {
-            return;
-        }
-
-        for (var i = 1; i < path.Count - 1; ++i)
-        {
-            var index = path[i].Item1 * width + path[i].Item2;
-            transform.GetChild(index).GetComponent<Renderer>().material.color = Color.magenta;
+            case (int)EFindingType.Dijkstra:
+                path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                break;
             
-            if (_isSkip == false)
-            {
-                await UniTask.Delay(delayTime);
-            }
+            case (int)EFindingType.AStar:
+                path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                break;
+            
+            default:
+                return;
         }
-    }
 
+        if (path == null) return;
+        
+        ChangePathTileColor(path);
+    }
+    
+    #region Event
+    
     public void SkipButtonClickEvent()
     {
         _isSkip = true;
@@ -156,6 +128,27 @@ public class TileGenerator : MonoBehaviour
             obj.GetComponent<Renderer>().material.color = Color.blue;
             _prevEndTile = obj;
         }
+    }
+    
+    #endregion
+
+    private async void ChangePathTileColor(List<(int, int)> path)
+    {
+        for (var i = 1; i < path.Count - 1; ++i)
+        {
+            _tileMat[path[i].Item1, path[i].Item2].color = Color.magenta;
+            
+            if (_isSkip == false)
+            {
+                await UniTask.Delay(delayTime);
+            }
+        }
+    }
+
+    private async void ChangeTileColor((int, int) pos, Color color)
+    {
+        _tileMat[pos.Item1, pos.Item2].color = color;
+        await UniTask.Delay(delayTime / 2);
     }
 
     private void SetTileArray()
@@ -216,6 +209,7 @@ public class TileGenerator : MonoBehaviour
     private void GenerateTile()
     {
         var pos = Vector3.zero;
+        _tileMat = new Material[height, width];
         
         for (var col = 0; col < height; ++col)
         {
@@ -227,6 +221,8 @@ public class TileGenerator : MonoBehaviour
 
                 obj.transform.position = pos;
                 pos.x += offset;
+
+                _tileMat[col, row] = obj.GetComponent<Renderer>().material;
             }
 
             pos.x = 0;

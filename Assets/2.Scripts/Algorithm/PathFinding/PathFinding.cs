@@ -1,9 +1,17 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace PathFinding
 {
+    public enum EFindingType
+    {
+        BFS,
+        Dijkstra,
+        AStar
+    }
+    
     public class BFS
     {
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
@@ -138,7 +146,7 @@ namespace PathFinding
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public List<(int, int)> AStar_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> AStar_PathFinding(int[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
@@ -163,6 +171,10 @@ namespace PathFinding
 
                 var cord = curNode.Pos;
                 visited[cord.Item1, cord.Item2] = true;
+
+                // 선택된 노드
+                ChangeTileColor?.Invoke(cord, Color.red);
+                await UniTask.Delay(30);
                 
                 // 노드 탐색 시작
                 for (var i = 0; i < _dx.Length; ++i)
@@ -217,6 +229,10 @@ namespace PathFinding
                     parent[yPos, xPos] = cord;
                     openNode.Enqueue(newNode, newNode.GetTotalWeight());
                     nodeDic.Add(newNode.Pos, newNode);
+                    
+                    // 탐색된 노드
+                    ChangeTileColor?.Invoke(cord, Color.gray);
+                    await UniTask.Delay(30);
                 }
             }
 
