@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -129,6 +130,8 @@ namespace PathFinding
 
     public class AStar
     {
+        public event Action<(int, int), Color> ChangeTileColor; 
+        
         private const int WEIGHT = 10;
         private const int DIAGONAL_WEIGHT = 14;
         
@@ -148,7 +151,7 @@ namespace PathFinding
             var nodeData = new NodeData(start, 0, 0);
             openNode.Enqueue(nodeData, 0);
             nodeDic.Add(nodeData.Pos, nodeData);
-
+            
             while (openNode.Count > 0)
             {
                 openNode.TryDequeue(out var curNode, out var f);
@@ -199,18 +202,19 @@ namespace PathFinding
                     
                     if (i < 4)
                     {
-                        newNode = new NodeData((xPos, yPos), curNode.G + WEIGHT, h);
+                        newNode = new NodeData((yPos, xPos), curNode.G + WEIGHT, h);
                     }
                     // 대각선인 경우 가중치 값 계산
                     else
                     {
-                        // 이동 불가능한 경우라면
+                        // 이동 불가능한 경우인지 확인
                         if( 0 > yPos + _dy[i] || yPos + _dy[i] <= height || 0 > xPos + _dx[i] || xPos + _dx[i] <= width) continue;
                         if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0) continue;
                         
-                        newNode = new NodeData((xPos, yPos), curNode.G + DIAGONAL_WEIGHT, h);
+                        newNode = new NodeData((yPos, xPos), curNode.G + DIAGONAL_WEIGHT, h);
                     }
-                    
+
+                    parent[yPos, xPos] = cord;
                     openNode.Enqueue(newNode, newNode.GetTotalWeight());
                     nodeDic.Add(newNode.Pos, newNode);
                 }
