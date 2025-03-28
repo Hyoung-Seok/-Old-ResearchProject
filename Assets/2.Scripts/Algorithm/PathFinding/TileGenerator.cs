@@ -66,14 +66,17 @@ public class TileGenerator : MonoBehaviour
         switch (type)
         {
             case (int)EFindingType.BFS:
-                _path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                Debug.Log("Start BFS PathFinding");
+                _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
                 break;
             
             case (int)EFindingType.Dijkstra:
-                _path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                Debug.Log("Start Dijkstra PathFinding");
+                _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
                 break;
             
             case (int)EFindingType.AStar:
+                Debug.Log("Start A* PathFinding");
                 _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
                 break;
             

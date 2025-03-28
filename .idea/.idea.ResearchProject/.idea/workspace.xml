@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="" />
+    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,6 +104,7 @@
       <workItem from="1742811350072" duration="13022000" />
       <workItem from="1742905413901" duration="6560000" />
       <workItem from="1742980510778" duration="15104000" />
+      <workItem from="1743089972902" duration="3300000" />
     </task>
     <servers />
   </component>

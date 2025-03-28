@@ -17,7 +17,7 @@ namespace PathFinding
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public List<(int, int)> BFS_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> BFS_PathFinding(int[,] tile, (int, int) start, (int, int) end)
         {
             var visited = new bool[tile.GetLength(0), tile.GetLength(1)];
             var queue = new Queue<(int, int)>();
@@ -29,6 +29,7 @@ namespace PathFinding
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
+                await FindPath.InvokeChangeTileColor(node, Color.gray);
 
                 if (node == end)
                 {
@@ -74,7 +75,7 @@ namespace PathFinding
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public List<(int, int)> Dijkstra_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> Dijkstra_PathFinding(int[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
@@ -100,6 +101,8 @@ namespace PathFinding
             {
                 pq.TryDequeue(out var node, out var priority);
                 visited[node.Item1, node.Item2] = true;
+                
+                await FindPath.InvokeChangeTileColor(node, Color.gray);
 
                 if (node == end)
                 {
@@ -138,8 +141,6 @@ namespace PathFinding
 
     public class AStar
     {
-        public event Action<(int, int), Color> ChangeTileColor; 
-        
         private const int WEIGHT = 10;
         private const int DIAGONAL_WEIGHT = 14;
         
@@ -173,8 +174,7 @@ namespace PathFinding
                 visited[cord.Item1, cord.Item2] = true;
 
                 // 선택된 노드
-                ChangeTileColor?.Invoke(cord, Color.red);
-                await UniTask.Delay(30);
+                await FindPath.InvokeChangeTileColor(cord, Color.gray);
                 
                 // 노드 탐색 시작
                 for (var i = 0; i < _dx.Length; ++i)
@@ -229,10 +229,6 @@ namespace PathFinding
                     parent[yPos, xPos] = cord;
                     openNode.Enqueue(newNode, newNode.GetTotalWeight());
                     nodeDic.Add(newNode.Pos, newNode);
-                    
-                    // 탐색된 노드
-                    ChangeTileColor?.Invoke(cord, Color.gray);
-                    await UniTask.Delay(30);
                 }
             }
 
@@ -269,6 +265,9 @@ namespace PathFinding
 
     public static class FindPath
     {
+        public static event Action<(int, int), Color> ChangeTileColor;
+        private static readonly int _delayTime = 20;
+        
         public static List<(int, int)> FindShortPath((int, int)[,] parent, (int, int) start,
             (int, int) end)
         {
@@ -285,6 +284,12 @@ namespace PathFinding
             result.Reverse();
 
             return result;
+        }
+
+        public static async UniTask InvokeChangeTileColor((int, int) pos, Color color)
+        {
+            ChangeTileColor?.Invoke(pos, color);
+            await UniTask.Delay(_delayTime);
         }
     }
 }
