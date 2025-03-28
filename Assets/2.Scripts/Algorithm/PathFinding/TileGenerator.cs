@@ -48,7 +48,7 @@ public class TileGenerator : MonoBehaviour
         _aStar = new AStar();
         _path = new List<(int, int)>();
 
-        _aStar.ChangeTileColor += ChangeTileColor;
+        FindPath.ChangeTileColor += ChangeTileColor;
         
         SetTileArray();
         GenerateTile();
@@ -135,10 +135,14 @@ public class TileGenerator : MonoBehaviour
     
     public void ResetTileColor()
     {
-        foreach (var pos in _path)
+        for (var col = 0; col < height; ++col)
         {
-            _tileMat[pos.Item1, pos.Item2].color =
-                (_tile[pos.Item1, pos.Item2] == 1) ? Color.white : Color.black;
+            for (var row = 0; row < width; ++row)
+            {
+                if(_tileMat[col, row].color == Color.black || _tileMat[col, row].color == Color.white) continue;
+
+                _tileMat[col, row].color = (_tile[col, row] == 1) ? Color.white : Color.black;
+            }
         }
 
         _tileMat[_startPos.Item1, _startPos.Item2].color = Color.red; 
