@@ -1402,7 +1402,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1783278743}
         m_TargetAssemblyTypeName: TileGenerator, Assembly-CSharp
-        m_MethodName: SkipButtonClickEvent
+        m_MethodName: ResetTileColor
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1758,7 +1758,7 @@ MonoBehaviour:
   width: 51
   height: 35
   offset: 2
-  delayTime: 100
+  delayTime: 30
 --- !u!114 &1783278744
 MonoBehaviour:
   m_ObjectHideFlags: 0

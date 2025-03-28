@@ -34,6 +34,7 @@ public class TileGenerator : MonoBehaviour
     private BFS _bfs;
     private Dijkstra _dijkstra;
     private AStar _aStar;
+    private List<(int, int)> _path;
     
     private void Start()
     {
@@ -45,6 +46,7 @@ public class TileGenerator : MonoBehaviour
         _bfs = new BFS();
         _dijkstra = new Dijkstra();
         _aStar = new AStar();
+        _path = new List<(int, int)>();
 
         _aStar.ChangeTileColor += ChangeTileColor;
         
@@ -60,29 +62,28 @@ public class TileGenerator : MonoBehaviour
         }
         
         _isSkip = false;
-        List<(int, int)> path = null;
 
         switch (type)
         {
             case (int)EFindingType.BFS:
-                path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                _path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
                 break;
             
             case (int)EFindingType.Dijkstra:
-                path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                _path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
                 break;
             
             case (int)EFindingType.AStar:
-                path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
                 break;
             
             default:
                 return;
         }
 
-        if (path == null) return;
+        if (_path.Count == 0) return;
         
-        ChangePathTileColor(path);
+        ChangePathTileColor(_path);
     }
     
     #region Event
@@ -131,6 +132,18 @@ public class TileGenerator : MonoBehaviour
     }
     
     #endregion
+    
+    public void ResetTileColor()
+    {
+        foreach (var pos in _path)
+        {
+            _tileMat[pos.Item1, pos.Item2].color =
+                (_tile[pos.Item1, pos.Item2] == 1) ? Color.white : Color.black;
+        }
+
+        _tileMat[_startPos.Item1, _startPos.Item2].color = Color.red; 
+        _tileMat[_endPos.Item1, _endPos.Item2].color = Color.blue; 
+    }
 
     private async void ChangePathTileColor(List<(int, int)> path)
     {
@@ -149,6 +162,31 @@ public class TileGenerator : MonoBehaviour
     {
         _tileMat[pos.Item1, pos.Item2].color = color;
         await UniTask.Delay(delayTime / 2);
+    }
+
+    #region GenerateMaze
+    private void GenerateTile()
+    {
+        var pos = Vector3.zero;
+        _tileMat = new Material[height, width];
+        
+        for (var col = 0; col < height; ++col)
+        {
+            for (var row = 0; row < width; ++row)
+            {
+                var obj = (_tile[col, row] == 0)
+                    ? Instantiate(wall, transform)
+                    : Instantiate(ground, transform);
+
+                obj.transform.position = pos;
+                pos.x += offset;
+
+                _tileMat[col, row] = obj.GetComponent<Renderer>().material;
+            }
+
+            pos.x = 0;
+            pos.z -= offset;
+        }
     }
 
     private void SetTileArray()
@@ -206,30 +244,8 @@ public class TileGenerator : MonoBehaviour
         return pos;
     }
 
-    private void GenerateTile()
-    {
-        var pos = Vector3.zero;
-        _tileMat = new Material[height, width];
-        
-        for (var col = 0; col < height; ++col)
-        {
-            for (var row = 0; row < width; ++row)
-            {
-                var obj = (_tile[col, row] == 0)
-                    ? Instantiate(wall, transform)
-                    : Instantiate(ground, transform);
-
-                obj.transform.position = pos;
-                pos.x += offset;
-
-                _tileMat[col, row] = obj.GetComponent<Renderer>().material;
-            }
-
-            pos.x = 0;
-            pos.z -= offset;
-        }
-    }
-
+    #endregion
+    
     private (int, int) ConvertChildIndexToCoordinate(int index)
     {
         var yPos = index / width;
