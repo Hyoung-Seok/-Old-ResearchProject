@@ -23,6 +23,7 @@ public class TileGenerator : MonoBehaviour
     
     [Header("Setting")] 
     [SerializeField] private bool isCreateBiome = false;
+    [SerializeField] private bool loadMazeData;
     [SerializeField] private int biomeRange = 8;
     [SerializeField] private int width;
     [SerializeField] private int height;
@@ -58,6 +59,15 @@ public class TileGenerator : MonoBehaviour
         _path = new List<(int, int)>();
 
         FindPath.ChangeTileColor += ChangeTileColor;
+
+        if (loadMazeData == true)
+        {
+            height = MazeData.Tile.GetLength(0);
+            width = MazeData.Tile.GetLength(1);
+            
+            GenerateTile(MazeData.Tile);
+            return;
+        }
         
         GenerateTile(SetTileArray());
     }
@@ -74,19 +84,20 @@ public class TileGenerator : MonoBehaviour
         switch (type)
         {
             case (int)EFindingType.BFS:
+                
                 Debug.Log("Start BFS PathFinding");
                 _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
                 break;
             
-            // case (int)EFindingType.Dijkstra:
-            //     Debug.Log("Start Dijkstra PathFinding");
-            //     _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
-            //     break;
-            //
-            // case (int)EFindingType.AStar:
-            //     Debug.Log("Start A* PathFinding");
-            //     _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
-            //     break;
+            case (int)EFindingType.Dijkstra:
+                Debug.Log("Start Dijkstra PathFinding");
+                _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                break;
+            
+            case (int)EFindingType.AStar:
+                Debug.Log("Start A* PathFinding");
+                _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                break;
             
             default:
                 return;
@@ -154,9 +165,7 @@ public class TileGenerator : MonoBehaviour
         {
             for (var row = 0; row < width; ++row)
             {
-                if(_tile[col, row].Mat.color == Color.black || _tile[col, row].Mat.color == Color.white) continue;
-
-                _tile[col, row].Mat.color = (_tile[col, row].Weight == 1) ? Color.white : Color.black;
+                _tile[col, row].ResetColor();
             }
         }
 

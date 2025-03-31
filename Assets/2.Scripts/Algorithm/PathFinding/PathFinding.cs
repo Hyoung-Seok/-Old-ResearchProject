@@ -17,7 +17,7 @@ namespace PathFinding
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public async UniTask<List<(int, int)>> BFS_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> BFS_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var visited = new bool[tile.GetLength(0), tile.GetLength(1)];
             var queue = new Queue<(int, int)>();
@@ -29,7 +29,7 @@ namespace PathFinding
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
-                await FindPath.InvokeChangeTileColor(node, Color.gray);
+                //await FindPath.InvokeChangeTileColor(node, Color.gray);
 
                 if (node == end)
                 {
@@ -47,14 +47,16 @@ namespace PathFinding
                         continue;
                     }
 
-                    if (tile[yPos, xPos] == 0 || visited[yPos, xPos] == true)
+                    if (tile[yPos, xPos].Weight == 0 || visited[yPos, xPos] == true)
                     {
                         continue;
                     }
 
                     if (i >= 4)
                     {
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0)
+                        if (0 >= yPos + _dy[i] || yPos + _dy[i] >= tile.GetLength(0) ||
+                            0 >= xPos + _dx[i] || xPos + _dx[i] >= tile.GetLength(1)) continue;
+                        if (tile[yPos + _dy[i], xPos].Weight == 0 || tile[yPos, xPos + _dx[i]].Weight == 0)
                         {
                             continue;
                         }
@@ -75,7 +77,7 @@ namespace PathFinding
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public async UniTask<List<(int, int)>> Dijkstra_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> Dijkstra_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
@@ -94,7 +96,6 @@ namespace PathFinding
 
             var pq = new PriorityQueue<(int, int), int>();
             pq.Enqueue(start, 0);
-            visited[start.Item1, start.Item2] = true;
             distance[start.Item1, start.Item2] = 0;
 
             while (pq.Count > 0)
@@ -102,7 +103,7 @@ namespace PathFinding
                 pq.TryDequeue(out var node, out var priority);
                 visited[node.Item1, node.Item2] = true;
                 
-                await FindPath.InvokeChangeTileColor(node, Color.gray);
+                //await FindPath.InvokeChangeTileColor(node, Color.gray);
 
                 if (node == end)
                 {
@@ -115,22 +116,23 @@ namespace PathFinding
                     var yPos = node.Item1 + _dy[i];
                     
                     if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
-                    if(visited[yPos, xPos] == true || tile[yPos, xPos] == 0) continue;
+                    if(visited[yPos, xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
                     if (i >= 4)
                     {
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0)
+                        if (tile[yPos + _dy[i], xPos].Weight == (int)EBiome.WALL ||
+                            tile[yPos, xPos + _dx[i]].Weight == (int)EBiome.WALL)
                         {
                             continue;
                         }
                     }
                     
-                    if (priority + 1 > distance[yPos, xPos])
+                    if (priority + tile[yPos, xPos].Weight > distance[yPos, xPos])
                     {
                         continue;
                     }
 
-                    pq.Enqueue((yPos, xPos), priority + 1);
-                    distance[yPos, xPos] = priority + 1;
+                    pq.Enqueue((yPos, xPos), priority + tile[yPos, xPos].Weight);
+                    distance[yPos, xPos] = priority + tile[yPos, xPos].Weight;
                     parent[yPos, xPos] = node;
                 }
             }
@@ -141,13 +143,10 @@ namespace PathFinding
 
     public class AStar
     {
-        private const int WEIGHT = 10;
-        private const int DIAGONAL_WEIGHT = 14;
-        
         private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
         private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
 
-        public async UniTask<List<(int, int)>> AStar_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public async UniTask<List<(int, int)>> AStar_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
@@ -165,6 +164,7 @@ namespace PathFinding
             {
                 openNode.TryDequeue(out var curNode, out var f);
 
+                if(visited[curNode.Pos.Item1, curNode.Pos.Item2] == true) continue;
                 if (curNode.Pos == end)
                 {
                     return FindPath.FindShortPath(parent, start, end);
@@ -174,7 +174,7 @@ namespace PathFinding
                 visited[cord.Item1, cord.Item2] = true;
 
                 // 선택된 노드
-                await FindPath.InvokeChangeTileColor(cord, Color.gray);
+                //await FindPath.InvokeChangeTileColor(cord, Color.gray);
                 
                 // 노드 탐색 시작
                 for (var i = 0; i < _dx.Length; ++i)
@@ -184,15 +184,17 @@ namespace PathFinding
                     
                     // 이동 가능한 타일인지 탐색
                     if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
-                    if(visited[yPos,xPos] == true || tile[yPos, xPos] == 0) continue;
+                    if(visited[yPos,xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
 
                     NodeData newNode;
+                    int weight;
                     
                     // 이미 노드가 존재한다면
                     if (nodeDic.TryGetValue((yPos, xPos), out var neighbor) == true)
                     {
-                        // 인접한 노드가 상하좌우라면 10, 대각선이라면 14를 기존 g(n)에 더함
-                        var g = (i < 4) ? neighbor.G + WEIGHT : neighbor.G + DIAGONAL_WEIGHT;
+                        // 인접한 노드가 상하좌우라면 가중치, 대각선이라면 14를 기존 g(n)에 더함
+                        weight = tile[yPos, xPos].Weight;
+                        var g = (i < 4) ? curNode.G + weight : curNode.G + Mathf.RoundToInt(weight * 1.4f);
                         
                         // 현재 노드를 지나쳐 갈 경우의 g(n)값이 더 낮다면
                         if (g < neighbor.G)
@@ -210,25 +212,33 @@ namespace PathFinding
                     }
                     
                     // 상하좌우인 경우 가중치 값 갱신
-                    var h = CalculateHeuristic((xPos, yPos), end);;
+                    var h = CalculateHeuristic((xPos, yPos), end);
                     
                     if (i < 4)
                     {
-                        newNode = new NodeData((yPos, xPos), curNode.G + WEIGHT, h);
+                        weight = tile[yPos, xPos].Weight;
+                        newNode = new NodeData((yPos, xPos), curNode.G + weight, h);
                     }
                     // 대각선인 경우 가중치 값 계산
                     else
                     {
                         // 이동 불가능한 경우인지 확인
-                        if( 0 > yPos + _dy[i] || yPos + _dy[i] <= height || 0 > xPos + _dx[i] || xPos + _dx[i] <= width) continue;
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0) continue;
-                        
-                        newNode = new NodeData((yPos, xPos), curNode.G + DIAGONAL_WEIGHT, h);
+                        if( 0 > yPos + _dy[i] || yPos + _dy[i] >= height || 0 > xPos + _dx[i] || xPos + _dx[i] >= width) continue;
+                        if (tile[yPos + _dy[i], xPos].Weight == 0 || tile[yPos, xPos + _dx[i]].Weight == 0) continue;
+
+                        weight = (int)(tile[yPos, xPos].Weight * 1.4f);
+                        newNode = new NodeData((yPos, xPos), curNode.G + weight, h);
                     }
 
                     parent[yPos, xPos] = cord;
                     openNode.Enqueue(newNode, newNode.GetTotalWeight());
-                    nodeDic.Add(newNode.Pos, newNode);
+                    
+                    if (!nodeDic.ContainsKey(newNode.Pos))
+                    {
+                        parent[yPos, xPos] = cord;
+                        openNode.Enqueue(newNode, newNode.GetTotalWeight());
+                        nodeDic.Add(newNode.Pos, newNode);
+                    }
                 }
             }
 
@@ -240,7 +250,7 @@ namespace PathFinding
             var dy = Mathf.Abs(start.Item1 - end.Item1);
             var dx = Mathf.Abs(start.Item2 - end.Item2);
 
-            return (dx + dy) / 2;
+            return (dx + dy);
         }
     }
 

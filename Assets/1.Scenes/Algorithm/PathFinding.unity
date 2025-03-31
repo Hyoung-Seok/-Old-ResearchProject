@@ -1760,6 +1760,7 @@ MonoBehaviour:
   - {fileID: 7047267589211825841, guid: 58ec15c82e5a3da449e7debc779b3707, type: 3}
   - {fileID: 7047267589211825841, guid: abd2047939e6cc146b29a9de10f63b28, type: 3}
   isCreateBiome: 1
+  loadMazeData: 1
   biomeRange: 8
   width: 51
   height: 35
