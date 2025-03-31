@@ -3,73 +3,79 @@ using System.Collections.Generic;
 
 public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
 {
-    private List<(TElement element, TPriority priority)> _heap = new();
-
+    private readonly List<(TElement, TPriority)> _heap = new List<(TElement, TPriority)>();
+    private TPriority _comparer;
+    
     public int Count => _heap.Count;
-
-    public void Enqueue(TElement element, TPriority priority)
+    
+    public bool Enqueue(TElement element, TPriority priority)
     {
+        // 가장 마지막 위치에 삽입
         _heap.Add((element, priority));
-        int current = _heap.Count - 1;
+        
+        // 스왑 시작
+        var index = _heap.Count - 1;
 
-        while (current > 0)
+        while (index > 0)
         {
-            int parent = (current - 1) / 2;
-            if (_heap[current].priority.CompareTo(_heap[parent].priority) >= 0)
-                break;
+            var parent = (index - 1) / 2;
+            
+            // 현재 값이 부모의 값보다 크거나 같다면
+            if (_heap[index].Item2.CompareTo(_heap[parent].Item2) >= 0)
+                return true;
 
-            Swap(current, parent);
-            current = parent;
+            (_heap[index], _heap[parent]) = (_heap[parent], _heap[index]);
+            index = parent;
         }
+
+        return false;
     }
 
     public bool TryDequeue(out TElement element, out TPriority priority)
     {
-        if (_heap.Count == 0)
+        if (_heap.Count <= 0)
         {
             element = default;
             priority = default;
             return false;
         }
 
-        element = _heap[0].element;
-        priority = _heap[0].priority;
+        element = _heap[0].Item1;
+        priority = _heap[0].Item2;
 
-        int last = _heap.Count - 1;
-        _heap[0] = _heap[last];
-        _heap.RemoveAt(last);
+        // Dequeue한 원소 제거. 원소가 하나만 남아있다면, 자연스럽게 제거됨
+        var lastElement = _heap[^1];
+        _heap[0] = lastElement;
+        _heap.RemoveAt(_heap.Count - 1);
 
-        int current = 0;
+        var index = 0;
+        var count = _heap.Count;
+        // 정렬 시작
         while (true)
         {
-            int left = current * 2 + 1;
-            int right = current * 2 + 2;
-            int smallest = current;
+            // 좌측, 우측 자식 인덱스 자식
+            var left = 2 * index + 1;
+            var right = 2 * index + 2;
+            var current = index;
+            
+            // 왼쪽 자식이 현재 탐색 위치의 우선순위보다 크다면
+            if (left < count && _heap[left].Item2.CompareTo(_heap[current].Item2) < 0)
+            {
+                current = left;
+            }
+            // 우측 자식이 현재 탐색 위치의 우선순위보다 크다면
+            if (right < count && _heap[right].Item2.CompareTo(_heap[current].Item2) < 0)
+            {
+                current = right;
+            }
+            // 왼쪽, 오른쪽 자식보다 현재 값이 작다면 
+            if (current == index)
+            {
+                return true;
+            }
 
-            if (left < _heap.Count && _heap[left].priority.CompareTo(_heap[smallest].priority) < 0)
-                smallest = left;
-            if (right < _heap.Count && _heap[right].priority.CompareTo(_heap[smallest].priority) < 0)
-                smallest = right;
-
-            if (smallest == current)
-                break;
-
-            Swap(current, smallest);
-            current = smallest;
+            (_heap[index], _heap[current]) = (_heap[current], _heap[index]);
+            index = current;
         }
-
-        return true;
-    }
-
-    public TElement Peek()
-    {
-        if (_heap.Count == 0)
-            throw new InvalidOperationException("PriorityQueue is empty.");
-        return _heap[0].element;
-    }
-
-    private void Swap(int a, int b)
-    {
-        (_heap[a], _heap[b]) = (_heap[b], _heap[a]);
     }
 }
