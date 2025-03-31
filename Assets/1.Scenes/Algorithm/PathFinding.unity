@@ -1753,8 +1753,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1411b825042c90341818c5a6972b3fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wall: {fileID: 7047267589211825841, guid: b23869b0c17a408428def1e91949023c, type: 3}
-  ground: {fileID: 3232942577607692612, guid: 32fbc1500fc92c74ca60a9b5bf036ce4, type: 3}
+  tileObject:
+  - {fileID: 7047267589211825841, guid: b23869b0c17a408428def1e91949023c, type: 3}
+  - {fileID: 3232942577607692612, guid: 32fbc1500fc92c74ca60a9b5bf036ce4, type: 3}
+  - {fileID: 7047267589211825841, guid: 8b244485427ac984fad67082a55d030e, type: 3}
+  - {fileID: 7047267589211825841, guid: 58ec15c82e5a3da449e7debc779b3707, type: 3}
+  - {fileID: 7047267589211825841, guid: abd2047939e6cc146b29a9de10f63b28, type: 3}
+  isCreateBiome: 1
+  biomeRange: 8
   width: 51
   height: 35
   offset: 2
