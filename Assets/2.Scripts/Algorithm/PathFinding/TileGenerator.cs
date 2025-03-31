@@ -37,8 +37,8 @@ public class TileGenerator : MonoBehaviour
 
     private (int, int) _startPos = (-1, -1);
     private (int, int) _endPos = (-1, -1);
-    private GameObject _prevStartTile;
-    private GameObject _prevEndTile;
+    private (Material, Color) _prevStartTile;
+    private (Material, Color) _prevEndTile;
 
     private BFS _bfs;
     private Dijkstra _dijkstra;
@@ -71,26 +71,26 @@ public class TileGenerator : MonoBehaviour
         
         _isSkip = false;
 
-        // switch (type)
-        // {
-        //     case (int)EFindingType.BFS:
-        //         Debug.Log("Start BFS PathFinding");
-        //         _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
-        //         break;
-        //     
-        //     case (int)EFindingType.Dijkstra:
-        //         Debug.Log("Start Dijkstra PathFinding");
-        //         _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
-        //         break;
-        //     
-        //     case (int)EFindingType.AStar:
-        //         Debug.Log("Start A* PathFinding");
-        //         _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
-        //         break;
-        //     
-        //     default:
-        //         return;
-        // }
+        switch (type)
+        {
+            case (int)EFindingType.BFS:
+                Debug.Log("Start BFS PathFinding");
+                _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                break;
+            
+            // case (int)EFindingType.Dijkstra:
+            //     Debug.Log("Start Dijkstra PathFinding");
+            //     _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+            //     break;
+            //
+            // case (int)EFindingType.AStar:
+            //     Debug.Log("Start A* PathFinding");
+            //     _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+            //     break;
+            
+            default:
+                return;
+        }
 
         if (_path.Count == 0) return;
         
@@ -113,13 +113,15 @@ public class TileGenerator : MonoBehaviour
             var obj = hit.collider.gameObject;
             _startPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (_prevStartTile != null)
+            if (_prevStartTile.Item1 != null)
             {
-                _prevStartTile.GetComponent<Renderer>().material.color = Color.white;
+                _prevStartTile.Item1.color = _prevStartTile.Item2;
             }
 
-            obj.GetComponent<Renderer>().material.color = Color.red;
-            _prevStartTile = obj;
+            _prevStartTile.Item1 = _tile[_startPos.Item1, _startPos.Item2].Mat;
+            _prevStartTile.Item2 = _tile[_startPos.Item1, _startPos.Item2].Mat.color;
+            
+            _tile[_startPos.Item1, _startPos.Item2].Mat.color = Color.red;
         }
     }
 
@@ -132,13 +134,15 @@ public class TileGenerator : MonoBehaviour
             var obj = hit.collider.gameObject;
             _endPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (_prevEndTile != null)
+            if (_prevEndTile.Item1 != null)
             {
-                _prevEndTile.GetComponent<Renderer>().material.color = Color.white;
+                _prevEndTile.Item1.color = _prevEndTile.Item2;
             }
 
-            obj.GetComponent<Renderer>().material.color = Color.blue;
-            _prevEndTile = obj;
+            _prevEndTile.Item1 = _tile[_endPos.Item1, _endPos.Item2].Mat;
+            _prevEndTile.Item2 = _tile[_endPos.Item1, _endPos.Item2].Mat.color;
+            
+            _tile[_endPos.Item1, _endPos.Item2].Mat.color = Color.blue;
         }
     }
     
