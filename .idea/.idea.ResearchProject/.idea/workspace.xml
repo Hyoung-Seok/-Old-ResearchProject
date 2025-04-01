@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/MazeData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/MazeData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +18,9 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/Graph/GraphGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/MazeData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PriorityQueue.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/Tile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/TileGenerator.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -107,6 +110,7 @@
       <workItem from="1743089972902" duration="3300000" />
       <workItem from="1743148726444" duration="17767000" />
       <workItem from="1743335276318" duration="2713000" />
+      <workItem from="1743415174597" duration="22514000" />
     </task>
     <servers />
   </component>
