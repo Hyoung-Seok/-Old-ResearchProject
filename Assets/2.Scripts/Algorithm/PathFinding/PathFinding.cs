@@ -52,14 +52,9 @@ namespace PathFinding
                         continue;
                     }
 
-                    if (i >= 4)
+                    if (i >= 4 && FindPath.IsDiagonalBlocked(tile, node, (_dy[i], _dx[i])) == true)
                     {
-                        if (0 >= yPos + _dy[i] || yPos + _dy[i] >= tile.GetLength(0) ||
-                            0 >= xPos + _dx[i] || xPos + _dx[i] >= tile.GetLength(1)) continue;
-                        if (tile[yPos + _dy[i], xPos].Weight == 0 || tile[yPos, xPos + _dx[i]].Weight == 0)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
 
                     queue.Enqueue((yPos, xPos));
