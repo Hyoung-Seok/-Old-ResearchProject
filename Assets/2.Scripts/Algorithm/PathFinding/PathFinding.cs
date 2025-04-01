@@ -244,12 +244,16 @@ namespace PathFinding
             return null;
         }
 
+        // 대각선 이동이 가능하므로, 맨허튼 거리 대신 대각선 이동의 정수 근사 휴리스틱 (10/14 방식) 사용.
         private float CalculateHeuristic((int, int) start, (int, int) end)
         {
-            var dy = Mathf.Abs(start.Item1 - end.Item1);
             var dx = Mathf.Abs(start.Item2 - end.Item2);
+            var dy = Mathf.Abs(start.Item1 - end.Item1);
 
-            return (dx + dy) / 2f;
+            var dir1 = 10f;
+            var dir2 = 14f;
+
+            return dir1 * (dx + dy) + (dir2 - 2 * dir1) * Mathf.Min(dx, dy);
         }
     }
     
