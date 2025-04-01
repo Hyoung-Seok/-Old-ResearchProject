@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public static class PathUtils
 {
+    public static bool SkipSearch = false;
     public static event Action<(int, int), Color> ChangeTileColor;
     public static readonly Vector2Int[] SearchDir = new[]
     {

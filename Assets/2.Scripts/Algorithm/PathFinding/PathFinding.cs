@@ -26,10 +26,15 @@ namespace PathFinding
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
-                //await FindPath.InvokeChangeTileColor(node, Color.gray);
+
+                if (PathUtils.SkipSearch == false)
+                {
+                    await PathUtils.InvokeChangeTileColor(node, Color.gray);
+                }
 
                 if (node == end)
                 {
+                    PathUtils.SkipSearch = false;
                     return PathUtils.FindShortPath(parent, start, end);
                 }
 
@@ -96,8 +101,14 @@ namespace PathFinding
 
                 if(visited[node.Item1, node.Item2] == true) continue;
                 
+                if (PathUtils.SkipSearch == false)
+                {
+                    await PathUtils.InvokeChangeTileColor(node, Color.gray);
+                }
+                
                 if (node == end)
                 {
+                    PathUtils.SkipSearch = false;
                     return PathUtils.FindShortPath(parent, start, end);
                 }
                 
@@ -156,8 +167,16 @@ namespace PathFinding
             while (openSet.Count > 0)
             {
                 if (openSet.TryDequeue(out var curNode, out var f) == false) return null;
+                
+                                
+                if (PathUtils.SkipSearch == false)
+                {
+                    await PathUtils.InvokeChangeTileColor(curNode.Pos, Color.gray);
+                }
+                
                 if (curNode.Pos == end)
                 {
+                    PathUtils.SkipSearch = false;
                     return PathUtils.FindShortPath(parent, start, end);
                 }
 

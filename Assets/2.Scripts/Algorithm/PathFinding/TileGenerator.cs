@@ -31,6 +31,7 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] private int delayTime = 500;
 
     private bool _isSkip = false;
+    private bool _isSearching = false;
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
     private Tile[,] _tile;
@@ -80,6 +81,7 @@ public class TileGenerator : MonoBehaviour
         }
         
         _isSkip = false;
+        _isSearching = true;
         Color color;
 
         switch (type)
@@ -108,7 +110,9 @@ public class TileGenerator : MonoBehaviour
         }
 
         if (_path.Count == 0) return;
-        
+
+        _isSearching = false;
+        ResetTileColor();
         ChangePathTileColor(_path, color);
     }
     
@@ -116,7 +120,14 @@ public class TileGenerator : MonoBehaviour
     
     public void SkipButtonClickEvent()
     {
-        _isSkip = true;
+        if (_isSearching == true)
+        {
+            PathUtils.SkipSearch = true;
+        }
+        else
+        {
+            _isSkip = true;
+        }
     }
 
     public void OnMouseLeftButtonClickEvent()
