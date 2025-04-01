@@ -80,6 +80,7 @@ public class TileGenerator : MonoBehaviour
         }
         
         _isSkip = false;
+        Color color;
 
         switch (type)
         {
@@ -87,16 +88,19 @@ public class TileGenerator : MonoBehaviour
                 
                 Debug.Log("Start BFS PathFinding");
                 _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                color = Color.cyan;
                 break;
             
             case (int)EFindingType.Dijkstra:
                 Debug.Log("Start Dijkstra PathFinding");
                 _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                color = Color.green;
                 break;
             
             case (int)EFindingType.AStar:
                 Debug.Log("Start A* PathFinding");
                 _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                color = Color.magenta;
                 break;
             
             default:
@@ -105,7 +109,7 @@ public class TileGenerator : MonoBehaviour
 
         if (_path.Count == 0) return;
         
-        ChangePathTileColor(_path);
+        ChangePathTileColor(_path, color);
     }
     
     #region Event
@@ -173,11 +177,11 @@ public class TileGenerator : MonoBehaviour
         _tile[_endPos.Item1, _endPos.Item2].Mat.color = Color.blue; 
     }
 
-    private async void ChangePathTileColor(List<(int, int)> path)
+    private async void ChangePathTileColor(List<(int, int)> path, Color color)
     {
         for (var i = 1; i < path.Count - 1; ++i)
         {
-            _tile[path[i].Item1, path[i].Item2].Mat.color = Color.magenta;
+            _tile[path[i].Item1, path[i].Item2].Mat.color = color;
             
             if (_isSkip == false)
             {
