@@ -14,9 +14,6 @@ namespace PathFinding
     
     public class BFS
     {
-        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
-        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
-
         public async UniTask<List<(int, int)>> BFS_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var visited = new bool[tile.GetLength(0), tile.GetLength(1)];
@@ -33,13 +30,16 @@ namespace PathFinding
 
                 if (node == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
 
-                for (var i = 0; i < _dx.Length; ++i)
+                var cnt = -1;
+                
+                foreach (var dir in PathUtils.SearchDir)
                 {
-                    var yPos = node.Item1 + _dy[i];
-                    var xPos = node.Item2 + _dx[i];
+                    cnt++;
+                    var yPos = node.Item1 + dir.y;
+                    var xPos = node.Item2 + dir.x;
 
                     if (xPos < 0 || xPos >= tile.GetLength(1) || yPos < 0 ||
                         yPos >= tile.GetLength(0))
@@ -52,7 +52,7 @@ namespace PathFinding
                         continue;
                     }
 
-                    if (i >= 4 && FindPath.IsDiagonalBlocked(tile, node, (_dy[i], _dx[i])) == true)
+                    if (cnt >= 4 && PathUtils.IsDiagonalBlocked(tile, node, (dir.y, dir.x)) == true)
                     {
                         continue;
                     }
@@ -69,9 +69,6 @@ namespace PathFinding
 
     public class Dijkstra
     {
-        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
-        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
-
         public async UniTask<List<(int, int)>> Dijkstra_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
@@ -101,26 +98,29 @@ namespace PathFinding
                 
                 if (node == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
                 
                 visited[node.Item1, node.Item2] = true;
+                var cnt = -1;
 
-                for (var i = 0; i < _dx.Length; ++i)
+                foreach (var dir in PathUtils.SearchDir)
                 {
-                    var xPos = node.Item2 + _dx[i];
-                    var yPos = node.Item1 + _dy[i];
+                    cnt++;
+                    
+                    var xPos = node.Item2 + dir.x;
+                    var yPos = node.Item1 + dir.y;
                     
                     if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
                     if(visited[yPos, xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
                     
                     // 대각선 이동 가능 검사
-                    if (i >= 4 && FindPath.IsDiagonalBlocked(tile, node, (_dy[i], _dx[i])) == true)
+                    if (cnt >= 4 && PathUtils.IsDiagonalBlocked(tile, node, (yPos, xPos)) == true)
                     {
                         continue;
                     }
 
-                    var weight = (i >= 4) ? tile[yPos, xPos].Weight * 1.4f : tile[yPos, xPos].Weight;
+                    var weight = (cnt >= 4) ? tile[yPos, xPos].Weight * 1.4f : tile[yPos, xPos].Weight;
                     var newDistance = weight + priority;
                     
                     if (newDistance > distance[yPos, xPos])
@@ -140,14 +140,6 @@ namespace PathFinding
 
     public class AStar
     {
-        private readonly Vector2Int[] _searchDir = new[]
-        {
-            new Vector2Int(0, -1), new Vector2Int(0, 1),
-            new Vector2Int(-1, 0), new Vector2Int(1, 0),
-            new Vector2Int(-1, -1), new Vector2Int(-1, 1),
-            new Vector2Int(1, -1), new Vector2Int(1, 1)
-        };
-
         public async UniTask<List<(int, int)>> AStar_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
             var height = tile.GetLength(0);
@@ -166,14 +158,14 @@ namespace PathFinding
                 if (openSet.TryDequeue(out var curNode, out var f) == false) return null;
                 if (curNode.Pos == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
 
                 closeSet[curNode.Pos.Item1, curNode.Pos.Item2] = true;
 
                 var current = -1;
                 
-                foreach (var dir in _searchDir)
+                foreach (var dir in PathUtils.SearchDir)
                 {
                     current++;
                     var xPos = curNode.Pos.Item2 + dir.x;
@@ -183,7 +175,7 @@ namespace PathFinding
                     if(closeSet[yPos, xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
                     
                     //  대각선 이동이 가능한지 확인
-                    if (current >= 4 && FindPath.IsDiagonalBlocked(tile, curNode.Pos, (dir.y, dir.x)) == true)
+                    if (current >= 4 && PathUtils.IsDiagonalBlocked(tile, curNode.Pos, (dir.y, dir.x)) == true)
                     {
                         continue;
                     }
@@ -266,48 +258,6 @@ namespace PathFinding
             }
 
             return compare;
-        }
-    }
-
-    public static class FindPath
-    {
-        public static event Action<(int, int), Color> ChangeTileColor;
-        private static readonly int _delayTime = 20;
-        
-        public static List<(int, int)> FindShortPath((int, int)[,] parent, (int, int) start,
-            (int, int) end)
-        {
-            var result = new List<(int, int)>();
-            var current = end;
-
-            while (current != start)
-            {
-                result.Add(current);
-                current = parent[current.Item1, current.Item2];
-            }
-
-            result.Add(start);
-            result.Reverse();
-
-            return result;
-        }
-
-        public static async UniTask InvokeChangeTileColor((int, int) pos, Color color)
-        {
-            ChangeTileColor?.Invoke(pos, color);
-            await UniTask.Delay(_delayTime);
-        }
-        
-        public static bool IsDiagonalBlocked(Tile[,] tile, (int y, int x) curNode, (int y, int x) moveDir)
-        {
-            var xPos = curNode.x + moveDir.x;
-            var yPos = curNode.y + moveDir.y;
-
-            if (xPos < 0 || xPos >= tile.GetLength(1) || yPos < 0 || yPos >= tile.GetLength(0))
-                return true;
-
-            return tile[yPos, curNode.x].Weight == (int)EBiome.WALL &&
-                   tile[curNode.y, xPos].Weight == (int)EBiome.WALL;
         }
     }
 }

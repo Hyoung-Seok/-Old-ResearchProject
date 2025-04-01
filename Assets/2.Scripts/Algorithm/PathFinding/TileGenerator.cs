@@ -58,7 +58,7 @@ public class TileGenerator : MonoBehaviour
         _aStar = new AStar();
         _path = new List<(int, int)>();
 
-        FindPath.ChangeTileColor += ChangeTileColor;
+        PathUtils.ChangeTileColor += ChangeTileColor;
 
         if (loadMazeData == true)
         {
