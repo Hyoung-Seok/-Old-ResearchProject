@@ -1,12 +1,8 @@
-using System;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
 public static class PathUtils
 {
-    public static bool SkipSearch = false;
-    public static event Action<(int, int), Color> ChangeTileColor;
     public static readonly Vector2Int[] SearchDir = new[]
     {
         new Vector2Int(0, -1), new Vector2Int(0, 1),
@@ -14,8 +10,6 @@ public static class PathUtils
         new Vector2Int(-1, -1), new Vector2Int(-1, 1),
         new Vector2Int(1, -1), new Vector2Int(1, 1)
     };
-    
-    private static readonly int _delayTime = 20;
     
     public static List<(int, int)> FindShortPath((int, int)[,] parent, (int, int) start,
         (int, int) end)
@@ -34,13 +28,7 @@ public static class PathUtils
 
         return result;
     }
-
-    public static async UniTask InvokeChangeTileColor((int, int) pos, Color color)
-    {
-        ChangeTileColor?.Invoke(pos, color);
-        await UniTask.Delay(_delayTime);
-    }
-        
+    
     public static bool IsDiagonalBlocked(Tile[,] tile, (int y, int x) curNode, (int y, int x) moveDir)
     {
         var xPos = curNode.x + moveDir.x;

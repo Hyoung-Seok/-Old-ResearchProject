@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using PathFinding;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -20,6 +21,8 @@ public class TileGenerator : MonoBehaviour
 {
     [Header("Component")] 
     [SerializeField] private GameObject[] tileObject;
+    [SerializeField] private TextMeshProUGUI loopCount;
+    [SerializeField] private TextMeshProUGUI elapsedTime;
     
     [Header("Setting")] 
     [SerializeField] private bool isCreateBiome = false;
@@ -31,7 +34,6 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] private int delayTime = 500;
 
     private bool _isSkip = false;
-    private bool _isSearching = false;
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
     private Tile[,] _tile;
@@ -59,8 +61,6 @@ public class TileGenerator : MonoBehaviour
         _aStar = new AStar();
         _path = new List<(int, int)>();
 
-        PathUtils.ChangeTileColor += ChangeTileColor;
-
         if (loadMazeData == true)
         {
             height = MazeData.Tile.GetLength(0);
@@ -80,28 +80,27 @@ public class TileGenerator : MonoBehaviour
             return;
         }
         
+        ResetTileColor();
         _isSkip = false;
-        _isSearching = true;
         Color color;
 
         switch (type)
         {
             case (int)EFindingType.BFS:
-                
                 Debug.Log("Start BFS PathFinding");
-                _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                _path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
                 color = Color.cyan;
                 break;
             
             case (int)EFindingType.Dijkstra:
                 Debug.Log("Start Dijkstra PathFinding");
-                _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                _path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
                 color = Color.green;
                 break;
             
             case (int)EFindingType.AStar:
                 Debug.Log("Start A* PathFinding");
-                _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                _path = _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
                 color = Color.magenta;
                 break;
             
@@ -111,23 +110,18 @@ public class TileGenerator : MonoBehaviour
 
         if (_path.Count == 0) return;
 
-        _isSearching = false;
-        ResetTileColor();
-        ChangePathTileColor(_path, color);
+        await ChangeTileColor(PrefCheck.CheckedTiles, Color.gray);
+        await ChangeTileColor(_path, color);
+
+        loopCount.text = PrefCheck.LoopCount.ToString();
+        elapsedTime.text = PrefCheck.ElapsedTime.ToString() + 's';
     }
     
     #region Event
     
     public void SkipButtonClickEvent()
     {
-        if (_isSearching == true)
-        {
-            PathUtils.SkipSearch = true;
-        }
-        else
-        {
-            _isSkip = true;
-        }
+        _isSkip = true;
     }
 
     public void OnMouseLeftButtonClickEvent()
@@ -187,24 +181,18 @@ public class TileGenerator : MonoBehaviour
         _tile[_startPos.Item1, _startPos.Item2].Mat.color = Color.red; 
         _tile[_endPos.Item1, _endPos.Item2].Mat.color = Color.blue; 
     }
-
-    private async void ChangePathTileColor(List<(int, int)> path, Color color)
+    
+    private async UniTask ChangeTileColor(List<(int, int)> posList, Color color)
     {
-        for (var i = 1; i < path.Count - 1; ++i)
+        foreach (var pos in posList)
         {
-            _tile[path[i].Item1, path[i].Item2].Mat.color = color;
-            
+            _tile[pos.Item1, pos.Item2].Mat.color = color;
+
             if (_isSkip == false)
             {
                 await UniTask.Delay(delayTime);
             }
         }
-    }
-
-    private async void ChangeTileColor((int, int) pos, Color color)
-    {
-        _tile[pos.Item1, pos.Item2].Mat.color = color;
-        await UniTask.Delay(delayTime / 2);
     }
 
     #region GenerateMaze

@@ -14,8 +14,10 @@ namespace PathFinding
     
     public class BFS
     {
-        public async UniTask<List<(int, int)>> BFS_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> BFS_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var visited = new bool[tile.GetLength(0), tile.GetLength(1)];
             var queue = new Queue<(int, int)>();
             var parent = new (int, int)[tile.GetLength(0), tile.GetLength(1)];
@@ -26,15 +28,11 @@ namespace PathFinding
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
-
-                if (PathUtils.SkipSearch == false)
-                {
-                    await PathUtils.InvokeChangeTileColor(node, Color.gray);
-                }
-
+                PrefCheck.AddCheckTile(node);
+                
                 if (node == end)
                 {
-                    PathUtils.SkipSearch = false;
+                    PrefCheck.EndPrefCheck();
                     return PathUtils.FindShortPath(parent, start, end);
                 }
 
@@ -68,14 +66,17 @@ namespace PathFinding
                 }
             }
 
+            PrefCheck.EndPrefCheck();
             return null;
         }
     }
 
     public class Dijkstra
     {
-        public async UniTask<List<(int, int)>> Dijkstra_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> Dijkstra_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
 
@@ -98,17 +99,13 @@ namespace PathFinding
             while (pq.Count > 0)
             {
                 pq.TryDequeue(out var node, out var priority);
+                PrefCheck.AddCheckTile(node);
 
                 if(visited[node.Item1, node.Item2] == true) continue;
                 
-                if (PathUtils.SkipSearch == false)
-                {
-                    await PathUtils.InvokeChangeTileColor(node, Color.gray);
-                }
-                
                 if (node == end)
                 {
-                    PathUtils.SkipSearch = false;
+                    PrefCheck.EndPrefCheck();
                     return PathUtils.FindShortPath(parent, start, end);
                 }
                 
@@ -145,14 +142,17 @@ namespace PathFinding
                 }
             }
 
+            PrefCheck.EndPrefCheck();
             return null;
         }
     }
 
     public class AStar
     {
-        public async UniTask<List<(int, int)>> AStar_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> AStar_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
             
@@ -166,17 +166,17 @@ namespace PathFinding
 
             while (openSet.Count > 0)
             {
-                if (openSet.TryDequeue(out var curNode, out var f) == false) return null;
-                
-                                
-                if (PathUtils.SkipSearch == false)
+                if (openSet.TryDequeue(out var curNode, out var f) == false)
                 {
-                    await PathUtils.InvokeChangeTileColor(curNode.Pos, Color.gray);
+                    PrefCheck.EndPrefCheck();
+                    return null;
                 }
+                
+                PrefCheck.AddCheckTile(curNode.Pos);
                 
                 if (curNode.Pos == end)
                 {
-                    PathUtils.SkipSearch = false;
+                    PrefCheck.EndPrefCheck();
                     return PathUtils.FindShortPath(parent, start, end);
                 }
 
@@ -241,6 +241,7 @@ namespace PathFinding
                 }
             }
             
+            PrefCheck.EndPrefCheck();
             return null;
         }
 
