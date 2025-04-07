@@ -4,8 +4,6 @@ using System.Collections.Generic;
 public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
 {
     private readonly List<(TElement, TPriority)> _heap = new List<(TElement, TPriority)>();
-    private TPriority _comparer;
-    
     public int Count => _heap.Count;
     
     public bool Enqueue(TElement element, TPriority priority)
