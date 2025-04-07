@@ -251,8 +251,8 @@ namespace PathFinding
             var dx = Mathf.Abs(start.Item2 - end.Item2);
             var dy = Mathf.Abs(start.Item1 - end.Item1);
 
-            var dir1 = 10f;
-            var dir2 = 14f;
+            var dir1 = 1f;
+            var dir2 = 1.414f;
 
             return dir1 * (dx + dy) + (dir2 - 2 * dir1) * Mathf.Min(dx, dy);
         }
