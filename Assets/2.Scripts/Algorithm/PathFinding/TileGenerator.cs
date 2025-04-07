@@ -3,17 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using PathFinding;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
+public enum EBiome
+{
+    WALL = 0,
+    ROAD = 1,
+    SAND = 4,
+    DUST = 8,
+    TRAP = 10
+}
+
 public class TileGenerator : MonoBehaviour
 {
     [Header("Component")] 
-    [SerializeField] private GameObject wall;
-    [SerializeField] private GameObject ground;
-
+    [SerializeField] private GameObject[] tileObject;
+    [SerializeField] private TextMeshProUGUI loopCount;
+    [SerializeField] private TextMeshProUGUI elapsedTime;
+    
     [Header("Setting")] 
+    [SerializeField] private bool isCreateBiome = false;
+    [SerializeField] private bool loadMazeData;
+    [SerializeField] private int biomeRange = 8;
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float offset = 0.5f;
@@ -22,14 +36,13 @@ public class TileGenerator : MonoBehaviour
     private bool _isSkip = false;
     private readonly int[] _dx = new[] { 0, 0, -2, 2 };
     private readonly int[] _dy = new[] { -2, 2, 0, 0 };
-    private int[,] _tile;
-    private Material[,] _tileMat;
+    private Tile[,] _tile;
     private Camera _mainCam;
 
     private (int, int) _startPos = (-1, -1);
     private (int, int) _endPos = (-1, -1);
-    private GameObject _prevStartTile;
-    private GameObject _prevEndTile;
+    private (Material, Color) _prevStartTile;
+    private (Material, Color) _prevEndTile;
 
     private BFS _bfs;
     private Dijkstra _dijkstra;
@@ -48,10 +61,16 @@ public class TileGenerator : MonoBehaviour
         _aStar = new AStar();
         _path = new List<(int, int)>();
 
-        FindPath.ChangeTileColor += ChangeTileColor;
+        if (loadMazeData == true)
+        {
+            height = MazeData.Tile.GetLength(0);
+            width = MazeData.Tile.GetLength(1);
+            
+            GenerateTile(MazeData.Tile);
+            return;
+        }
         
-        SetTileArray();
-        GenerateTile();
+        GenerateTile(SetTileArray());
     }
 
     public async void StartPathFinding(int type)
@@ -61,23 +80,28 @@ public class TileGenerator : MonoBehaviour
             return;
         }
         
+        ResetTileColor();
         _isSkip = false;
+        Color color;
 
         switch (type)
         {
             case (int)EFindingType.BFS:
                 Debug.Log("Start BFS PathFinding");
-                _path = await _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                _path = _bfs.BFS_PathFinding(_tile, _startPos, _endPos);
+                color = Color.cyan;
                 break;
             
             case (int)EFindingType.Dijkstra:
                 Debug.Log("Start Dijkstra PathFinding");
-                _path = await _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                _path = _dijkstra.Dijkstra_PathFinding(_tile, _startPos, _endPos);
+                color = Color.green;
                 break;
             
             case (int)EFindingType.AStar:
                 Debug.Log("Start A* PathFinding");
-                _path = await _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                _path = _aStar.AStar_PathFinding(_tile, _startPos, _endPos);
+                color = Color.magenta;
                 break;
             
             default:
@@ -85,8 +109,12 @@ public class TileGenerator : MonoBehaviour
         }
 
         if (_path.Count == 0) return;
-        
-        ChangePathTileColor(_path);
+
+        await ChangeTileColor(PrefCheck.CheckedTiles, Color.gray);
+        await ChangeTileColor(_path, color);
+
+        loopCount.text = PrefCheck.LoopCount.ToString();
+        elapsedTime.text = PrefCheck.ElapsedTime.ToString() + 's';
     }
     
     #region Event
@@ -105,13 +133,15 @@ public class TileGenerator : MonoBehaviour
             var obj = hit.collider.gameObject;
             _startPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (_prevStartTile != null)
+            if (_prevStartTile.Item1 != null)
             {
-                _prevStartTile.GetComponent<Renderer>().material.color = Color.white;
+                _prevStartTile.Item1.color = _prevStartTile.Item2;
             }
 
-            obj.GetComponent<Renderer>().material.color = Color.red;
-            _prevStartTile = obj;
+            _prevStartTile.Item1 = _tile[_startPos.Item1, _startPos.Item2].Mat;
+            _prevStartTile.Item2 = _tile[_startPos.Item1, _startPos.Item2].Mat.color;
+            
+            _tile[_startPos.Item1, _startPos.Item2].Mat.color = Color.red;
         }
     }
 
@@ -124,13 +154,15 @@ public class TileGenerator : MonoBehaviour
             var obj = hit.collider.gameObject;
             _endPos = ConvertChildIndexToCoordinate(obj.transform.GetSiblingIndex());
 
-            if (_prevEndTile != null)
+            if (_prevEndTile.Item1 != null)
             {
-                _prevEndTile.GetComponent<Renderer>().material.color = Color.white;
+                _prevEndTile.Item1.color = _prevEndTile.Item2;
             }
 
-            obj.GetComponent<Renderer>().material.color = Color.blue;
-            _prevEndTile = obj;
+            _prevEndTile.Item1 = _tile[_endPos.Item1, _endPos.Item2].Mat;
+            _prevEndTile.Item2 = _tile[_endPos.Item1, _endPos.Item2].Mat.color;
+            
+            _tile[_endPos.Item1, _endPos.Item2].Mat.color = Color.blue;
         }
     }
     
@@ -142,22 +174,20 @@ public class TileGenerator : MonoBehaviour
         {
             for (var row = 0; row < width; ++row)
             {
-                if(_tileMat[col, row].color == Color.black || _tileMat[col, row].color == Color.white) continue;
-
-                _tileMat[col, row].color = (_tile[col, row] == 1) ? Color.white : Color.black;
+                _tile[col, row].ResetColor();
             }
         }
 
-        _tileMat[_startPos.Item1, _startPos.Item2].color = Color.red; 
-        _tileMat[_endPos.Item1, _endPos.Item2].color = Color.blue; 
+        _tile[_startPos.Item1, _startPos.Item2].Mat.color = Color.red; 
+        _tile[_endPos.Item1, _endPos.Item2].Mat.color = Color.blue; 
     }
-
-    private async void ChangePathTileColor(List<(int, int)> path)
+    
+    private async UniTask ChangeTileColor(List<(int, int)> posList, Color color)
     {
-        for (var i = 1; i < path.Count - 1; ++i)
+        foreach (var pos in posList)
         {
-            _tileMat[path[i].Item1, path[i].Item2].color = Color.magenta;
-            
+            _tile[pos.Item1, pos.Item2].Mat.color = color;
+
             if (_isSkip == false)
             {
                 await UniTask.Delay(delayTime);
@@ -165,30 +195,48 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    private async void ChangeTileColor((int, int) pos, Color color)
-    {
-        _tileMat[pos.Item1, pos.Item2].color = color;
-        await UniTask.Delay(delayTime / 2);
-    }
-
     #region GenerateMaze
-    private void GenerateTile()
+    private void GenerateTile(int[,] tile)
     {
         var pos = Vector3.zero;
-        _tileMat = new Material[height, width];
+        _tile = new Tile[height, width];
         
         for (var col = 0; col < height; ++col)
         {
             for (var row = 0; row < width; ++row)
             {
-                var obj = (_tile[col, row] == 0)
-                    ? Instantiate(wall, transform)
-                    : Instantiate(ground, transform);
+                GameObject obj;
+                
+                switch (tile[col, row])
+                {
+                    case (int)EBiome.WALL:
+                        obj = Instantiate(tileObject[0], transform);
+                        break;
+                    
+                    case (int)EBiome.ROAD:
+                        obj = Instantiate(tileObject[1], transform);
+                        break;
+                    
+                    case (int)EBiome.SAND:
+                        obj = Instantiate(tileObject[2], transform);
+                        break;
+                    
+                    case (int)EBiome.DUST:
+                        obj = Instantiate(tileObject[3], transform);
+                        break;
+                    
+                    case (int)EBiome.TRAP:
+                        obj = Instantiate(tileObject[4], transform);
+                        break;
+                    
+                    default:
+                        continue;
+                }
 
                 obj.transform.position = pos;
                 pos.x += offset;
 
-                _tileMat[col, row] = obj.GetComponent<Renderer>().material;
+                _tile[col, row] = new Tile(obj, tile[col, row]);
             }
 
             pos.x = 0;
@@ -196,9 +244,9 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    private void SetTileArray()
+    private int[,] SetTileArray()
     {
-        _tile = new int[height, width];
+        var tile = new int[height, width];
         var stack = new Stack<(int, int)>();
         
         stack.Push(GetRandomPosition());
@@ -206,9 +254,9 @@ public class TileGenerator : MonoBehaviour
         while (stack.Count > 0)
         {
             var pos = stack.Pop();
-            _tile[pos.Item1, pos.Item2] = 1;
+            tile[pos.Item1, pos.Item2] = 1;
 
-            var nextPos = GetNextPosition(pos);
+            var nextPos = GetNextPosition(tile, pos);
 
             if (nextPos.Item1 == -1)
             {
@@ -218,9 +266,49 @@ public class TileGenerator : MonoBehaviour
             stack.Push(pos);
             stack.Push(nextPos);
         }
+        
+        return (isCreateBiome == true) ? CreateRandomBiome(tile) : tile;
     }
 
-    private (int, int) GetNextPosition((int, int) pos)
+    private int[,] CreateRandomBiome(int[,] tile)
+    {
+        var randX = width / 2 + Random.Range(-biomeRange, biomeRange);
+        var randY = height / 2 + Random.Range(-biomeRange, biomeRange);
+            
+        var landBiome = new[] { EBiome.SAND, EBiome.DUST, EBiome.TRAP };
+        landBiome = landBiome.OrderBy(_ => Random.value).ToArray();
+
+        var quadrants = new[] { 0, 1, 2, 3 }.OrderBy(_ => Random.value).ToList();
+
+        var biomeDic = new Dictionary<int, EBiome>();
+        for (var i = 0; i < landBiome.Length; ++i)
+        {
+            biomeDic[quadrants[i]] = landBiome[i];
+        }
+
+        for (var col = 0; col < height; ++col)
+        {
+            for (var row = 0; row < width; ++row)
+            {
+                if(tile[col, row] == (int)EBiome.WALL) continue;
+                    
+                int q;
+                if (col <= randY && row <= randX) q = 0;
+                else if (col <= randY && row > randX) q = 1;
+                else if (col > randY && row <= randX) q = 2;
+                else q = 3;
+
+                if (biomeDic.ContainsKey(q) == true)
+                {
+                    tile[col, row] = (int)biomeDic[q];
+                }
+            }
+        }
+
+        return tile;
+    }
+
+    private (int, int) GetNextPosition(int[,] tile, (int, int) pos)
     {
         var land = new[] { 0, 1, 2, 3 };
         land = land.OrderBy(_ => Random.value).ToArray();
@@ -229,12 +317,12 @@ public class TileGenerator : MonoBehaviour
         {
             if (pos.Item1 + _dy[index] < 1 || pos.Item1 + _dy[index] >= height - 1 ||
                 pos.Item2 + _dx[index] < 1 || pos.Item2 + _dx[index] >= width - 1 ||
-                _tile[pos.Item1 + _dy[index], pos.Item2 + _dx[index]] == 1)
+                tile[pos.Item1 + _dy[index], pos.Item2 + _dx[index]] == 1)
             {
                 continue;
             }
 
-            _tile[pos.Item1 + _dy[index] / 2, pos.Item2 + _dx[index] / 2] = 1;
+            tile[pos.Item1 + _dy[index] / 2, pos.Item2 + _dx[index] / 2] = 1;
             return (pos.Item1 + _dy[index], pos.Item2 + _dx[index]);
         }
 

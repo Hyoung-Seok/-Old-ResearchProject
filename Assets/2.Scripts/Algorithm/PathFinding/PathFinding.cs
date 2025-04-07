@@ -14,11 +14,10 @@ namespace PathFinding
     
     public class BFS
     {
-        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
-        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
-
-        public async UniTask<List<(int, int)>> BFS_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> BFS_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var visited = new bool[tile.GetLength(0), tile.GetLength(1)];
             var queue = new Queue<(int, int)>();
             var parent = new (int, int)[tile.GetLength(0), tile.GetLength(1)];
@@ -29,17 +28,21 @@ namespace PathFinding
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
-                await FindPath.InvokeChangeTileColor(node, Color.gray);
-
+                PrefCheck.AddCheckTile(node);
+                
                 if (node == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    PrefCheck.EndPrefCheck();
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
 
-                for (var i = 0; i < _dx.Length; ++i)
+                var cnt = -1;
+                
+                foreach (var dir in PathUtils.SearchDir)
                 {
-                    var yPos = node.Item1 + _dy[i];
-                    var xPos = node.Item2 + _dx[i];
+                    cnt++;
+                    var yPos = node.Item1 + dir.y;
+                    var xPos = node.Item2 + dir.x;
 
                     if (xPos < 0 || xPos >= tile.GetLength(1) || yPos < 0 ||
                         yPos >= tile.GetLength(0))
@@ -47,17 +50,14 @@ namespace PathFinding
                         continue;
                     }
 
-                    if (tile[yPos, xPos] == 0 || visited[yPos, xPos] == true)
+                    if (tile[yPos, xPos].Weight == 0 || visited[yPos, xPos] == true)
                     {
                         continue;
                     }
 
-                    if (i >= 4)
+                    if (cnt >= 4 && PathUtils.IsDiagonalBlocked(tile, node, (dir.y, dir.x)) == true)
                     {
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
 
                     queue.Enqueue((yPos, xPos));
@@ -66,22 +66,22 @@ namespace PathFinding
                 }
             }
 
+            PrefCheck.EndPrefCheck();
             return null;
         }
     }
 
     public class Dijkstra
     {
-        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
-        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
-
-        public async UniTask<List<(int, int)>> Dijkstra_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> Dijkstra_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
 
             var visited = new bool[height, width];
-            var distance = new int[height, width];
+            var distance = new float[height, width];
             var parent = new (int, int)[height, width];
 
             for (var i = 0; i < height; ++i)
@@ -92,204 +92,196 @@ namespace PathFinding
                 }
             }
 
-            var pq = new PriorityQueue<(int, int), int>();
+            var pq = new PriorityQueue<(int, int), float>();
             pq.Enqueue(start, 0);
-            visited[start.Item1, start.Item2] = true;
             distance[start.Item1, start.Item2] = 0;
 
             while (pq.Count > 0)
             {
                 pq.TryDequeue(out var node, out var priority);
-                visited[node.Item1, node.Item2] = true;
-                
-                await FindPath.InvokeChangeTileColor(node, Color.gray);
+                PrefCheck.AddCheckTile(node);
 
+                if(visited[node.Item1, node.Item2] == true) continue;
+                
                 if (node == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    PrefCheck.EndPrefCheck();
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
+                
+                visited[node.Item1, node.Item2] = true;
+                var cnt = -1;
 
-                for (var i = 0; i < _dx.Length; ++i)
+                foreach (var dir in PathUtils.SearchDir)
                 {
-                    var xPos = node.Item2 + _dx[i];
-                    var yPos = node.Item1 + _dy[i];
+                    cnt++;
+                    
+                    var xPos = node.Item2 + dir.x;
+                    var yPos = node.Item1 + dir.y;
                     
                     if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
-                    if(visited[yPos, xPos] == true || tile[yPos, xPos] == 0) continue;
-                    if (i >= 4)
-                    {
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0)
-                        {
-                            continue;
-                        }
-                    }
+                    if(visited[yPos, xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
                     
-                    if (priority + 1 > distance[yPos, xPos])
+                    // 대각선 이동 가능 검사
+                    if (cnt >= 4 && PathUtils.IsDiagonalBlocked(tile, node, (yPos, xPos)) == true)
                     {
                         continue;
                     }
 
-                    pq.Enqueue((yPos, xPos), priority + 1);
-                    distance[yPos, xPos] = priority + 1;
+                    var weight = (cnt >= 4) ? tile[yPos, xPos].Weight * 1.4f : tile[yPos, xPos].Weight;
+                    var newDistance = weight + priority;
+                    
+                    if (newDistance > distance[yPos, xPos])
+                    {
+                        continue;
+                    }
+
+                    pq.Enqueue((yPos, xPos), newDistance);
+                    distance[yPos, xPos] = newDistance;
                     parent[yPos, xPos] = node;
                 }
             }
 
+            PrefCheck.EndPrefCheck();
             return null;
         }
     }
 
     public class AStar
     {
-        private const int WEIGHT = 10;
-        private const int DIAGONAL_WEIGHT = 14;
-        
-        private readonly int[] _dx = { 0, 0, -1, 1, -1, -1, 1, 1 };
-        private readonly int[] _dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
-
-        public async UniTask<List<(int, int)>> AStar_PathFinding(int[,] tile, (int, int) start, (int, int) end)
+        public List<(int, int)> AStar_PathFinding(Tile[,] tile, (int, int) start, (int, int) end)
         {
+            PrefCheck.StartPrefCheck();
+            
             var height = tile.GetLength(0);
             var width = tile.GetLength(1);
-
-            var parent = new (int, int)[height, width];
-            var visited = new bool[height, width];
-            var openNode = new PriorityQueue<NodeData, int>();
-            var nodeDic = new Dictionary<(int, int), NodeData>();
-
-            var nodeData = new NodeData(start, 0, 0);
-            openNode.Enqueue(nodeData, 0);
-            nodeDic.Add(nodeData.Pos, nodeData);
             
-            while (openNode.Count > 0)
-            {
-                openNode.TryDequeue(out var curNode, out var f);
+            var openSet = new PriorityQueue<NodeData, float>();
+            var openSetDic = new Dictionary<(int, int), NodeData>();
+            var closeSet = new bool[height, width];
+            var parent = new (int, int)[height, width];
 
+            // 첫 노드는 바로 close 처리 되기 때문에 OpenSetDic에 들어갈 필요 없음
+            openSet.Enqueue(new NodeData(start, 0, 0), 0);
+
+            while (openSet.Count > 0)
+            {
+                if (openSet.TryDequeue(out var curNode, out var f) == false)
+                {
+                    PrefCheck.EndPrefCheck();
+                    return null;
+                }
+                
+                PrefCheck.AddCheckTile(curNode.Pos);
+                
                 if (curNode.Pos == end)
                 {
-                    return FindPath.FindShortPath(parent, start, end);
+                    PrefCheck.EndPrefCheck();
+                    return PathUtils.FindShortPath(parent, start, end);
                 }
 
-                var cord = curNode.Pos;
-                visited[cord.Item1, cord.Item2] = true;
+                closeSet[curNode.Pos.Item1, curNode.Pos.Item2] = true;
 
-                // 선택된 노드
-                await FindPath.InvokeChangeTileColor(cord, Color.gray);
+                var current = -1;
                 
-                // 노드 탐색 시작
-                for (var i = 0; i < _dx.Length; ++i)
+                foreach (var dir in PathUtils.SearchDir)
                 {
-                    var xPos = cord.Item2 + _dx[i];
-                    var yPos = cord.Item1 + _dy[i];
+                    current++;
+                    var xPos = curNode.Pos.Item2 + dir.x;
+                    var yPos = curNode.Pos.Item1 + dir.y;
                     
-                    // 이동 가능한 타일인지 탐색
                     if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) continue;
-                    if(visited[yPos,xPos] == true || tile[yPos, xPos] == 0) continue;
-
-                    NodeData newNode;
+                    if(closeSet[yPos, xPos] == true || tile[yPos, xPos].Weight == (int)EBiome.WALL) continue;
                     
-                    // 이미 노드가 존재한다면
-                    if (nodeDic.TryGetValue((yPos, xPos), out var neighbor) == true)
+                    //  대각선 이동이 가능한지 확인
+                    if (current >= 4 && PathUtils.IsDiagonalBlocked(tile, curNode.Pos, (dir.y, dir.x)) == true)
                     {
-                        // 인접한 노드가 상하좌우라면 10, 대각선이라면 14를 기존 g(n)에 더함
-                        var g = (i < 4) ? neighbor.G + WEIGHT : neighbor.G + DIAGONAL_WEIGHT;
+                        continue;
+                    }
+
+                    // 이미 열린 목록에 노드가 존재한다면
+                    // 상하좌우 4방향만 이동 가능하고, 모든 가중치가 동일하다면, 이미 열린 목록을 확인할 필요는 없음.
+                    if (openSetDic.TryGetValue((yPos, xPos), out var neighbor) == true)
+                    {
+                        // 이웃한 노드를 거쳐, 현재 노드로 올 때의 Weight값 계산
+                        var neighborWeight = tile[yPos, xPos].Weight;
+                        var g = current < 4
+                            ? curNode.G + neighborWeight
+                            : curNode.G + neighborWeight * 1.4f;
                         
-                        // 현재 노드를 지나쳐 갈 경우의 g(n)값이 더 낮다면
+                        // 만약, 이웃노드->현재노드로 올 때의 값이, 이웃 노드의 g(n)보다 작다면 부모 및 g(n)값 갱신
                         if (g < neighbor.G)
                         {
-                            // g값하고 h값만 갱신하면 된다?
                             neighbor.G = g;
+                            parent[neighbor.Pos.Item1, neighbor.Pos.Item2] = curNode.Pos;
                             
-                            // 인접 노드의 부모 노드를 현재 노드로 갱신
-                            parent[neighbor.Pos.Item1, neighbor.Pos.Item2] = cord;
-                            openNode.Enqueue(neighbor, neighbor.GetTotalWeight());
+                            // 갱신된 이웃 노드를 다시 열린 목록에 추가
+                            openSet.Enqueue(neighbor, neighbor.TotalWeight);
                             
-                            // 이미 노드가 존재한다면, 아래의 코드는 실행할 필요 없음
+                            // 갱신했으므로, 이후의 과정은 하지 않아도 됨.
                             continue;
                         }
                     }
                     
-                    // 상하좌우인 경우 가중치 값 갱신
-                    var h = CalculateHeuristic((xPos, yPos), end);;
-                    
-                    if (i < 4)
-                    {
-                        newNode = new NodeData((yPos, xPos), curNode.G + WEIGHT, h);
-                    }
-                    // 대각선인 경우 가중치 값 계산
-                    else
-                    {
-                        // 이동 불가능한 경우인지 확인
-                        if( 0 > yPos + _dy[i] || yPos + _dy[i] <= height || 0 > xPos + _dx[i] || xPos + _dx[i] <= width) continue;
-                        if (tile[yPos + _dy[i], xPos] == 0 || tile[yPos, xPos + _dx[i]] == 0) continue;
-                        
-                        newNode = new NodeData((yPos, xPos), curNode.G + DIAGONAL_WEIGHT, h);
-                    }
+                    // 이웃 노드 탐색(대각 이동이라면, 기존 가중치 값에 1.4를 곱함)
+                    var weight = current < 4
+                        ? tile[yPos, xPos].Weight
+                        : tile[yPos, xPos].Weight * 1.4f;
 
-                    parent[yPos, xPos] = cord;
-                    openNode.Enqueue(newNode, newNode.GetTotalWeight());
-                    nodeDic.Add(newNode.Pos, newNode);
+                    var h = CalculateHeuristic((yPos, xPos), end);
+                    var newNode = new NodeData((yPos, xPos), weight, h);
+                    
+                    // 부모 노드 갱신
+                    parent[yPos, xPos] = curNode.Pos;
+                    
+                    if (openSetDic.TryAdd((yPos, xPos), newNode) == true)
+                    {
+                        openSet.Enqueue(newNode, newNode.TotalWeight);
+                    };
                 }
             }
-
+            
+            PrefCheck.EndPrefCheck();
             return null;
         }
 
-        private int CalculateHeuristic((int, int) start, (int, int) end)
+        // 대각선 이동이 가능하므로, 맨허튼 거리 대신 대각선 이동의 정수 근사 휴리스틱 (10/14 방식) 사용.
+        private float CalculateHeuristic((int, int) start, (int, int) end)
         {
-            var dy = Mathf.Abs(start.Item1 - end.Item1);
             var dx = Mathf.Abs(start.Item2 - end.Item2);
+            var dy = Mathf.Abs(start.Item1 - end.Item1);
 
-            return (dx + dy) / 2;
+            var dir1 = 1f;
+            var dir2 = 1.414f;
+
+            return dir1 * (dx + dy) + (dir2 - 2 * dir1) * Mathf.Min(dx, dy);
         }
     }
-
-    public class NodeData
+    
+    public class NodeData : IComparable<NodeData>
     {
-        public int G;
-        public int H;
+        public float G;
+        public float H;
         public (int, int) Pos;
+        public float TotalWeight => G + H;
 
-        public NodeData((int, int) pos, int g, int h)
+        public NodeData((int, int) pos, float g, float h)
         {
             Pos = pos;
             G = g;
             H = h;
         }
 
-        public int GetTotalWeight()
+        public int CompareTo(NodeData other)
         {
-            return G + H;
-        }
-    }
+            var compare = TotalWeight.CompareTo(other.TotalWeight);
 
-    public static class FindPath
-    {
-        public static event Action<(int, int), Color> ChangeTileColor;
-        private static readonly int _delayTime = 20;
-        
-        public static List<(int, int)> FindShortPath((int, int)[,] parent, (int, int) start,
-            (int, int) end)
-        {
-            var result = new List<(int, int)>();
-            var current = end;
-
-            while (current != start)
+            if (compare == 0)
             {
-                result.Add(current);
-                current = parent[current.Item1, current.Item2];
+                compare = Pos.CompareTo(other.Pos);
             }
 
-            result.Add(start);
-            result.Reverse();
-
-            return result;
-        }
-
-        public static async UniTask InvokeChangeTileColor((int, int) pos, Color color)
-        {
-            ChangeTileColor?.Invoke(pos, color);
-            await UniTask.Delay(_delayTime);
+            return compare;
         }
     }
 }
