@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/1.Scenes/Algorithm/PathFinding.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/1.Scenes/Algorithm/PathFinding.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathFinding.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathUtils.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/TileGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/TileGenerator.cs" afterDir="false" />
-    </list>
+    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -118,6 +112,7 @@
       <workItem from="1743415174597" duration="22514000" />
       <workItem from="1743510000417" duration="11063000" />
       <workItem from="1743944991865" duration="2743000" />
+      <workItem from="1744013091673" duration="15195000" />
     </task>
     <servers />
   </component>
