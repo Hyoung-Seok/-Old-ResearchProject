@@ -27,6 +27,7 @@ public class TileGenerator : MonoBehaviour
     [Header("Setting")] 
     [SerializeField] private bool isCreateBiome = false;
     [SerializeField] private bool loadMazeData;
+    [SerializeField] private bool showCreateMaze;
     [SerializeField] private int biomeRange = 8;
     [SerializeField] private int width;
     [SerializeField] private int height;
@@ -48,6 +49,8 @@ public class TileGenerator : MonoBehaviour
     private Dijkstra _dijkstra;
     private AStar _aStar;
     private List<(int, int)> _path;
+
+    private (int, int) _subPos;
     
     private void Start()
     {
@@ -69,7 +72,12 @@ public class TileGenerator : MonoBehaviour
             GenerateTile(MazeData.Tile);
             return;
         }
-        
+
+        if (showCreateMaze == true)
+        {
+            ShowCreateTile();
+            return;
+        }
         GenerateTile(SetTileArray());
     }
 
@@ -270,6 +278,33 @@ public class TileGenerator : MonoBehaviour
         return (isCreateBiome == true) ? CreateRandomBiome(tile) : tile;
     }
 
+    private async void ShowCreateTile()
+    {
+        var tile = new int[height, width];
+        var stack = new Stack<(int, int)>();
+        
+        GenerateTile(tile);
+        stack.Push(GetRandomPosition());
+
+        while (stack.Count > 0)
+        {
+            var pos = stack.Pop();
+            tile[pos.Item1, pos.Item2] = 1;
+
+            var nextPos = GetNextPosition(tile, pos);
+
+            if (nextPos.Item1 == -1)
+            {
+                continue;
+            }
+            
+            stack.Push(pos);
+            stack.Push(nextPos);
+
+            await ChangeTileColor(new List<(int, int)>() { (_subPos), (nextPos) }, Color.white);
+        }
+    }
+
     private int[,] CreateRandomBiome(int[,] tile)
     {
         var randX = width / 2 + Random.Range(-biomeRange, biomeRange);
@@ -315,15 +350,21 @@ public class TileGenerator : MonoBehaviour
 
         foreach (var index in land)
         {
-            if (pos.Item1 + _dy[index] < 1 || pos.Item1 + _dy[index] >= height - 1 ||
-                pos.Item2 + _dx[index] < 1 || pos.Item2 + _dx[index] >= width - 1 ||
-                tile[pos.Item1 + _dy[index], pos.Item2 + _dx[index]] == 1)
+            var nextY = pos.Item1 + _dy[index];
+            var nextX = pos.Item2 + _dx[index];
+            
+            if (nextY < 1 || nextY >= height - 1 ||
+                nextX < 1 || nextX >= width - 1 ||
+                tile[nextY, nextX] == 1)
             {
                 continue;
             }
 
-            tile[pos.Item1 + _dy[index] / 2, pos.Item2 + _dx[index] / 2] = 1;
-            return (pos.Item1 + _dy[index], pos.Item2 + _dx[index]);
+            var wallY = (pos.Item1 + nextY) / 2;
+            var wallX = (pos.Item2 + nextX) / 2;
+
+            _subPos = (wallY, wallX);
+            return (nextY, nextX);
         }
 
         return (-1, -1);
