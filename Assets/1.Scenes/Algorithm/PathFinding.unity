@@ -2035,6 +2035,7 @@ MonoBehaviour:
   elapsedTime: {fileID: 112633420}
   isCreateBiome: 1
   loadMazeData: 0
+  showCreateMaze: 0
   biomeRange: 8
   width: 51
   height: 35
