@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/1.Scenes/Algorithm/PathFinding.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/1.Scenes/Algorithm/PathFinding.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/GenerateNoiseMap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/GenerateNoiseMap.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +24,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PriorityQueue.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/Tile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/TileGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/GenerateNoiseMap.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -40,7 +42,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Algorithm/PathFinding&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;PCG/PerlinNoise&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -116,6 +118,8 @@
       <workItem from="1743944991865" duration="2743000" />
       <workItem from="1744013091673" duration="15195000" />
       <workItem from="1744191793563" duration="10955000" />
+      <workItem from="1744726902994" duration="6509000" />
+      <workItem from="1744798346793" duration="3332000" />
     </task>
     <servers />
   </component>
