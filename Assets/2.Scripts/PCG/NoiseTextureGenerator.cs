@@ -2,22 +2,38 @@ using UnityEngine;
 
 public static class NoiseTextureGenerator
 {
-    public static Texture2D GenerateNoiseTexture(float[,] noiseMap)
+    private static ColorHeight[] _colorHeights;
+    
+    public static Texture2D GenerateNoiseTexture(float[,] noiseMap, ColorHeight[] colorHeights)
     {
         var tex = new Texture2D(noiseMap.GetLength(1), noiseMap.GetLength(0));
-        tex.filterMode = FilterMode.Bilinear;
+        _colorHeights = colorHeights;
 
         for (var y = 0; y < noiseMap.GetLength(0); ++y)
         {
             for (var x = 0; x < noiseMap.GetLength(1); ++x)
             {
-                var value = noiseMap[y, x];
-                var color = new Color(value, value, value);
+                var color = ApplyHeightColor(noiseMap[y, x]);
                 tex.SetPixel(x, y, color);
             }
         }
         
+        tex.filterMode = FilterMode.Point;
+        tex.wrapMode = TextureWrapMode.Clamp;
         tex.Apply();
         return tex;
+    }
+
+    private static Color ApplyHeightColor(float height)
+    {
+        foreach (var colorHeight in _colorHeights)
+        {
+            if (colorHeight.Height > height)
+            {
+                return colorHeight.Color;
+            }
+        }
+        
+        return Color.black;
     }
 }
