@@ -14,5 +14,10 @@ public class PerlinNoiseCustomInspector : Editor
         {
             noiseManager.GeneratePerlinNoiseMap();
         }
+
+        if (GUILayout.Button("Generate FallOffMap") == true)
+        {
+            noiseManager.GenerateFallOffMap();
+        }
     }
 }
