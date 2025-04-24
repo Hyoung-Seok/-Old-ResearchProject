@@ -12,6 +12,11 @@ public class PerlinNoiseManager : MonoBehaviour
     [Header("Perlin Noise")] 
     [SerializeField] private NoiseData noiseData;
     [SerializeField] private ColorData colorData;
+    
+    [Header("Terrain Setting")]
+    [SerializeField] private Terrain terrain;
+    [SerializeField] private float maxHeight = 50f;
+    
 
     private float[,] _noiseMap;
     private float[,] _fallOffMap;
@@ -50,6 +55,15 @@ public class PerlinNoiseManager : MonoBehaviour
         var tex = NoiseTextureGenerator.GenerateNoiseTexture(_fractalMap, colorData.NoiseColor);
         fractalRenderer.sprite = Sprite.Create(tex, 
             new Rect(0, 0, noiseData.Width, noiseData.Height), new Vector2(0.5f, 0.5f));
+    }
+
+    public void CreateTerrain()
+    {
+        var terrainData = terrain.terrainData;
+
+        terrainData.heightmapResolution = Mathf.Max(noiseData.Width, noiseData.Height);
+        terrainData.size = new Vector3(noiseData.Width, maxHeight, noiseData.Height);
+        terrainData.SetHeights(0, 0, _fractalMap);
     }
 
     private void OnValidate()

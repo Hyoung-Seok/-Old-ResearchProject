@@ -24,5 +24,10 @@ public class PerlinNoiseCustomInspector : Editor
         {
             noiseManager.ApplyFallOffMap();
         }
+
+        if (GUILayout.Button("Create Terrain") == true)
+        {
+            noiseManager.CreateTerrain();
+        }
     }
 }
