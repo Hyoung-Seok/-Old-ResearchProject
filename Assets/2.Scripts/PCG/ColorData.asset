@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ColorData
   m_EditorClassIdentifier: 
   NoiseColor:
-  - height: 0.3
+  - height: 0.2
     color: {r: 0, g: 0.20736837, b: 1, a: 1}
   - height: 0.4
     color: {r: 1, g: 0.9538098, b: 0, a: 1}
