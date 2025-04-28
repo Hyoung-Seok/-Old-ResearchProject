@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PerlinNoiseManager : MonoBehaviour
 {
@@ -15,13 +16,13 @@ public class PerlinNoiseManager : MonoBehaviour
     [SerializeField] private ColorData colorData;
 
     [Header("Terrain Setting")] 
-    [SerializeField] private Vector2[] blandingRanges;
+    [SerializeField] private Vector2[] blendingRanges;
     [SerializeField] private Terrain terrain;
     [SerializeField] private Material terrainShader;
     [SerializeField] private float maxHeight = 50f;
-
+    
     [Header("Shader Properties")] 
-    [SerializeField] private List<string> blandingRangeNames;
+    [SerializeField] private List<string> blendingRangeNames;
     private static readonly int MinMaxHeight = Shader.PropertyToID("_MinMaxHeight");
     
     private float[,] _noiseMap;
@@ -78,12 +79,12 @@ public class PerlinNoiseManager : MonoBehaviour
     {
         terrainShader.SetVector(MinMaxHeight, new Vector2(0f, maxHeight));
 
-        if (blandingRangeNames.Count != blandingRanges.Length) return;
+        if (blendingRangeNames.Count != blendingRanges.Length) return;
 
-        for (var i = 0; i < blandingRangeNames.Count; ++i)
+        for (var i = 0; i < blendingRangeNames.Count; ++i)
         {
-            var id = Shader.PropertyToID(blandingRangeNames[i]);
-            terrainShader.SetVector(id, blandingRanges[i]);
+            var id = Shader.PropertyToID(blendingRangeNames[i]);
+            terrainShader.SetVector(id, blendingRanges[i]);
         }
     }
 }
