@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PerlinNoiseManager : MonoBehaviour
@@ -12,12 +13,17 @@ public class PerlinNoiseManager : MonoBehaviour
     [Header("Perlin Noise")] 
     [SerializeField] private NoiseData noiseData;
     [SerializeField] private ColorData colorData;
-    
-    [Header("Terrain Setting")]
-    [SerializeField] private Terrain terrain;
-    [SerializeField] private float maxHeight = 50f;
-    
 
+    [Header("Terrain Setting")] 
+    [SerializeField] private Vector2[] blandingRanges;
+    [SerializeField] private Terrain terrain;
+    [SerializeField] private Material terrainShader;
+    [SerializeField] private float maxHeight = 50f;
+
+    [Header("Shader Properties")] 
+    [SerializeField] private List<string> blandingRangeNames;
+    private static readonly int MinMaxHeight = Shader.PropertyToID("_MinMaxHeight");
+    
     private float[,] _noiseMap;
     private float[,] _fallOffMap;
     private float[,] _fractalMap;
@@ -64,10 +70,20 @@ public class PerlinNoiseManager : MonoBehaviour
         terrainData.heightmapResolution = Mathf.Max(noiseData.Width, noiseData.Height);
         terrainData.size = new Vector3(noiseData.Width, maxHeight, noiseData.Height);
         terrainData.SetHeights(0, 0, _fractalMap);
+        
+        SetShaderProperty();
     }
 
-    private void OnValidate()
+    private void SetShaderProperty()
     {
-        GeneratePerlinNoiseMap();
+        terrainShader.SetVector(MinMaxHeight, new Vector2(0f, maxHeight));
+
+        if (blandingRangeNames.Count != blandingRanges.Length) return;
+
+        for (var i = 0; i < blandingRangeNames.Count; ++i)
+        {
+            var id = Shader.PropertyToID(blandingRangeNames[i]);
+            terrainShader.SetVector(id, blandingRanges[i]);
+        }
     }
 }
