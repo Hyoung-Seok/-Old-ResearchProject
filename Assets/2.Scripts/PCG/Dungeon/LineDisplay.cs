@@ -8,10 +8,10 @@ public class LineDisplay : MonoBehaviour
     [SerializeField] private float width;
     [SerializeField] private Material lineMat;
 
-    public void DisplayLine(List<RoomNode> nodeList)
+    public void DisplayLine(RoomNode rootNode)
     {
         var queue = new Queue<RoomNode>();
-        queue.Enqueue(nodeList[0]);
+        queue.Enqueue(rootNode);
 
         while (queue.Count > 0)
         {

@@ -19,7 +19,7 @@ public class DungeonGenerator : MonoBehaviour
         var bsp = new BinarySpacePartitioning();
         _roomNodeList = bsp.BSP(dungeonData);
         
-        GetComponent<LineDisplay>().DisplayLine(_roomNodeList);
+        GetComponent<LineDisplay>().DisplayLine(_roomNodeList[0]);
     }
     
 }
