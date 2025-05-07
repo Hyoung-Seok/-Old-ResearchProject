@@ -21,5 +21,4 @@ public class DungeonGenerator : MonoBehaviour
         
         GetComponent<LineDisplay>().DisplayLine(_roomNodeList[0]);
     }
-    
 }
