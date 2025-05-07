@@ -377,11 +377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b618c3dbddf30148a10a771071c247a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 100
-  height: 100
-  roomMinWidth: 15
-  roomMinHeight: 15
-  iteration: 10
+  dungeonData: {fileID: 11400000, guid: e2efa9eb42f195b4ca54a117355de9b3, type: 2}
 --- !u!114 &1592849403
 MonoBehaviour:
   m_ObjectHideFlags: 0

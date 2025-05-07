@@ -20,9 +20,11 @@ public class LineDisplay : MonoBehaviour
             var obj = new GameObject($"Room{node.Index}").AddComponent<LineRenderer>();
             obj.transform.SetParent(transform);
             obj.positionCount = 5;
+            obj.startWidth = obj.endWidth = width;
+            obj.material = lineMat;
 
             var posArr = node.Pos.GetPositionArray();
-            for (var i = 0; i < posArr.Length +1; ++i)
+            for (var i = 0; i < posArr.Length + 1; ++i)
             {
                 var cur = posArr[i % posArr.Length];
                 obj.SetPosition(i, new Vector3(cur.x, 0, cur.y));
