@@ -392,6 +392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 0.5
   lineMat: {fileID: 2100000, guid: e63d2ec65431c8c428f479177f5b249e, type: 2}
+  roomMat: {fileID: 2100000, guid: 583444b05b5c41a48bb268aff19e9e9a, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
