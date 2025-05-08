@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04a49fd8e97fd347872c2ebfdf79965, type: 3}
   m_Name: DungeonData
   m_EditorClassIdentifier: 
-  width: 180
-  height: 150
+  width: 200
+  height: 200
   roomMinWidth: 30
-  roomMinHeight: 30
+  roomMinHeight: 35
   iteration: 8
-  offset: {x: 10, y: 10}
+  offset: {x: 3, y: 3}
   bottomLeftWeight: 0.1
   topRightWeight: 0.8

@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
 {
+    [Header("Component")] 
+    [SerializeField] private LineDisplay lineDisplay;
+
+    [SerializeField] private MeshCreater meshCreater;
+    
     [Header("Create Setting")] 
     [SerializeField] private DungeonData dungeonData;
     
     private List<RoomNode> _roomNodeList;
+    private List<RoomNode> _leafNode;
 
     private void Start()
     {
@@ -18,14 +24,15 @@ public class DungeonGenerator : MonoBehaviour
     {
         var bsp = new BinarySpacePartitioning();
         var roomGenerator = new RoomGenerator();
-        var lineDisplay = GetComponent<LineDisplay>();
         
         _roomNodeList = bsp.BSP(dungeonData);
+        _leafNode = GetAllLeafNode();
         
-        Debug.Log(GetAllLeafNode().Count);
-        roomGenerator.GenerateRoom(GetAllLeafNode(), dungeonData);
+        roomGenerator.GenerateRoom(_leafNode, dungeonData);
         lineDisplay.DisplayLine(_roomNodeList[0]);
-        lineDisplay.DisplayLine(GetAllLeafNode());
+        lineDisplay.DisplayLine(_leafNode);
+        
+        _leafNode.ForEach(x => meshCreater.CreateMesh(x.RoomPosition));
     }
 
     private List<RoomNode> GetAllLeafNode()
