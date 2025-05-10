@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class MeshCreater : MonoBehaviour
+public class MeshGenerator : MonoBehaviour
 {
     [Header("Component")] 
     [SerializeField] private Material[] floorMat;

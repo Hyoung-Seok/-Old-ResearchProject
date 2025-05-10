@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum ELine
 {
@@ -11,10 +13,12 @@ public enum ELine
 public class BinarySpacePartitioning
 {
     private DungeonData _data;
-
-    public List<RoomNode> BSP(DungeonData data)
+    private bool _checkConditions;
+    
+    public List<RoomNode> BSP(DungeonData data, bool checkConditions = true)
     {
         _data = data;
+        _checkConditions = checkConditions;
 
         var rootPos = new NodePosition(new Vector2Int(0, _data.Height), 
             new Vector2Int(_data.Width, 0));
@@ -42,7 +46,8 @@ public class BinarySpacePartitioning
 
         var splitDir = (widthStatus, heightStatus) switch
         {
-            (true, true) => (ELine)Random.Range(0,2),
+            (true, true) when _checkConditions => CheckSizeRatio(node),
+            (true, true) => (ELine)Random.Range(0, 2),
             (false, true) => ELine.Horizontal,
             (true, false) => ELine.Vertical,
             _ => ELine.None
@@ -53,19 +58,23 @@ public class BinarySpacePartitioning
         NodePosition pos1 = null;
         NodePosition pos2 = null;
 
+        Vector3[] rangeVec = null;
+
         switch (splitDir)
         {
             case ELine.Horizontal:
-                newPos = Random.Range(curPos.BL.y + _data.RoomMinHeight,
-                    curPos.TL.y - _data.RoomMinHeight);
+                newPos = _checkConditions ? 
+                    GetSplitPos(node.Height, _data.RoomMinHeight, curPos.BL.y) :
+                    Random.Range(curPos.BL.y + _data.RoomMinHeight, curPos.TL.y - _data.RoomMinHeight);
 
                 pos1 = new NodePosition(curPos.TL, new Vector2Int(curPos.BR.x, newPos));
                 pos2 = new NodePosition(new Vector2Int(curPos.BL.x, newPos), curPos.BR);
                 break;
 
             case ELine.Vertical:
-                newPos = Random.Range(curPos.BL.x + _data.RoomMinWidth,
-                    curPos.BR.x - _data.RoomMinWidth);
+                newPos = _checkConditions ?
+                    GetSplitPos(node.Width, _data.RoomMinWidth, curPos.BL.x) :
+                    Random.Range(curPos.BL.x + _data.RoomMinWidth, curPos.BR.x - _data.RoomMinWidth);
 
                 pos1 = new NodePosition(curPos.TL, new Vector2Int(newPos, curPos.BL.y));
                 pos2 = new NodePosition(new Vector2Int(newPos, curPos.TL.y), curPos.BR);
@@ -75,7 +84,7 @@ public class BinarySpacePartitioning
             default:
                 return;
         }
-
+        
         var node1 = new RoomNode(node, pos1, node.Index + 1);
         var node2 = new RoomNode(node, pos2, node.Index + 1);
         
@@ -84,5 +93,42 @@ public class BinarySpacePartitioning
 
         graph.Enqueue(node2);
         nodeList.Add(node2);
+    }
+
+    private int GetSplitPos(int size, int minSize, int corner)
+    {
+        var range = (size - minSize * 2) / 2;
+        var mid = corner + size / 2;
+        
+        var splitRatio = _data.SplitRange;
+        var offset = (int)(range * splitRatio);
+        var checkSize = (mid + offset) - (mid - offset);
+        
+        while (checkSize < minSize * 2)
+        {
+            splitRatio /= 2;
+
+            if (splitRatio < 0.1f)
+            {
+                return mid;
+            }
+            
+            offset = (int)(range * splitRatio);
+            checkSize = (mid + offset) - (mid - offset);
+            
+        }
+        return Random.Range(mid - offset, mid + offset);
+    }
+
+    private ELine CheckSizeRatio(RoomNode node)
+    {
+        var ratio = (float)node.Width / node.Height;
+        var line = ELine.None;
+
+        if (ratio >= _data.HorizontalRatio) line = ELine.Vertical;
+        else if (ratio < _data.VerticalRatio) line = ELine.Horizontal;
+        else line = (ELine)Random.Range(0, 2);
+
+        return line;
     }
 }
