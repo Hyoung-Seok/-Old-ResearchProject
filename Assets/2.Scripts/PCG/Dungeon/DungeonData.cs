@@ -9,6 +9,11 @@ public class DungeonData : ScriptableObject
     [SerializeField] private int roomMinWidth;
     [SerializeField] private int roomMinHeight;
     [SerializeField] private int iteration;
+    
+    [Header("Split Setting")]
+    [SerializeField] private float horizontalRatio = 1.25f;
+    [SerializeField] private float verticalRatio = 0.8f;
+    [SerializeField, Range(0f, 1f)] private float splitRange = 0.5f; 
 
     [Header("Room Generate Setting")] 
     [SerializeField] private Vector2Int offset;
@@ -23,4 +28,7 @@ public class DungeonData : ScriptableObject
     public Vector2Int Offset => offset;
     public float BottomLeftWeight => bottomLeftWeight;
     public float TopRightWeight => topRightWeight;
+    public float HorizontalRatio => horizontalRatio;
+    public float VerticalRatio => verticalRatio;
+    public float SplitRange => splitRange;
 }
