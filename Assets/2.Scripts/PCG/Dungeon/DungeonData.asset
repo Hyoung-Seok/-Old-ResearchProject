@@ -19,7 +19,7 @@ MonoBehaviour:
   iteration: 10
   horizontalRatio: 1.25
   verticalRatio: 0.8
-  splitRange: 0.7
+  splitRange: 0.5
   offset: {x: 3, y: 3}
   bottomLeftWeight: 0.1
   topRightWeight: 0.8

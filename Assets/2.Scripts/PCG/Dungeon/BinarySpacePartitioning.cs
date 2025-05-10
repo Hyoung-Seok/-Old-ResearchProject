@@ -58,8 +58,6 @@ public class BinarySpacePartitioning
         NodePosition pos1 = null;
         NodePosition pos2 = null;
 
-        Vector3[] rangeVec = null;
-
         switch (splitDir)
         {
             case ELine.Horizontal:
@@ -102,19 +100,19 @@ public class BinarySpacePartitioning
         
         var splitRatio = _data.SplitRange;
         var offset = (int)(range * splitRatio);
-        var checkSize = (mid + offset) - (mid - offset);
+        var checkSize = offset * 2;
         
         while (checkSize < minSize * 2)
         {
-            splitRatio /= 2;
+            splitRatio += 0.1f;
 
-            if (splitRatio < 0.1f)
+            if (splitRatio > 1f)
             {
                 return mid;
             }
             
             offset = (int)(range * splitRatio);
-            checkSize = (mid + offset) - (mid - offset);
+            checkSize = offset * 2;
             
         }
         return Random.Range(mid - offset, mid + offset);

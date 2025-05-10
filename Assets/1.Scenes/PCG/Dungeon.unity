@@ -380,7 +380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineDisplay: {fileID: 1592849403}
   meshGenerator: {fileID: 1592849404}
-  checkConditions: 0
+  checkConditions: 1
   dungeonData: {fileID: 11400000, guid: e2efa9eb42f195b4ca54a117355de9b3, type: 2}
 --- !u!114 &1592849403
 MonoBehaviour:
