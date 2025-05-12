@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 1592849401}
   - component: {fileID: 1592849402}
   - component: {fileID: 1592849403}
+  - component: {fileID: 1592849404}
   m_Layer: 0
   m_Name: DungeonGenerator
   m_TagString: Untagged
@@ -377,6 +378,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b618c3dbddf30148a10a771071c247a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lineDisplay: {fileID: 1592849403}
+  meshGenerator: {fileID: 1592849404}
+  checkConditions: 1
   dungeonData: {fileID: 11400000, guid: e2efa9eb42f195b4ca54a117355de9b3, type: 2}
 --- !u!114 &1592849403
 MonoBehaviour:
@@ -392,6 +396,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 0.5
   lineMat: {fileID: 2100000, guid: e63d2ec65431c8c428f479177f5b249e, type: 2}
+  roomMat: {fileID: 2100000, guid: 583444b05b5c41a48bb268aff19e9e9a, type: 2}
+--- !u!114 &1592849404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592849400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1da228b6de7fa7048baaef6fdacdc58b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorMat:
+  - {fileID: 2100000, guid: fe5fa89d6921c724b9166fd90eeb5592, type: 2}
+  - {fileID: 2100000, guid: 1b17be5fe3338a845935df946903b0fd, type: 2}
+  - {fileID: 2100000, guid: 3d4dd73a3f3ea9c4cad50e84620a3ed0, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

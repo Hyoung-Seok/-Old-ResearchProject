@@ -7,6 +7,7 @@ public class LineDisplay : MonoBehaviour
     [Header("Line Setting")] 
     [SerializeField] private float width;
     [SerializeField] private Material lineMat;
+    [SerializeField] private Material roomMat;
 
     public void DisplayLine(RoomNode rootNode)
     {
@@ -17,7 +18,7 @@ public class LineDisplay : MonoBehaviour
         {
             var node = queue.Dequeue();
 
-            var obj = new GameObject($"Room{node.Index}").AddComponent<LineRenderer>();
+            var obj = new GameObject($"Area{node.Index}").AddComponent<LineRenderer>();
             obj.transform.SetParent(transform);
             obj.positionCount = 5;
             obj.startWidth = obj.endWidth = width;
@@ -36,5 +37,23 @@ public class LineDisplay : MonoBehaviour
             }
         }
     }
+    
+    public void DisplayLine(List<RoomNode> nodeList)
+    {
+        foreach (var node in nodeList)
+        {
+            var obj = new GameObject($"Room{node.Index}").AddComponent<LineRenderer>();
+            obj.transform.SetParent(transform);
+            obj.positionCount = 5;
+            obj.startWidth = obj.endWidth = width;
+            obj.material = roomMat;
 
+            var posArr = node.RoomPosition.GetPositionArray();
+            for (var i = 0; i < posArr.Length + 1; ++i)
+            {
+                var cur = posArr[i % posArr.Length];
+                obj.SetPosition(i, new Vector3(cur.x, 0, cur.y));
+            }
+        }
+    }
 }
