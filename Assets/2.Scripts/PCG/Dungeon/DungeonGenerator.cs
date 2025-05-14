@@ -25,38 +25,18 @@ public class DungeonGenerator : MonoBehaviour
     {
         var bsp = new BinarySpacePartitioning();
         var roomGenerator = new RoomGenerator();
+        var corridorGenerator = new CorridorGenerator();
         
         _roomNodeList = bsp.BSP(dungeonData, checkConditions);
-        _leafNode = GetAllLeafNode();
+        _leafNode = NodeUtility.GetAllLeafNode(_roomNodeList[0]);
         
         roomGenerator.GenerateRoom(_leafNode, dungeonData);
         lineDisplay.DisplayLine(_roomNodeList[0]);
         lineDisplay.DisplayLine(_leafNode);
         
         _leafNode.ForEach(x => meshGenerator.CreateMesh(x.RoomPosition));
-    }
 
-    private List<RoomNode> GetAllLeafNode()
-    {
-        var leafNodes = new List<RoomNode>();
-        var queue = new Queue<RoomNode>(new[] { _roomNodeList[0] });
-
-        while (queue.Count > 0)
-        {
-            var node = queue.Dequeue();
-
-            if (node.ChildNode.Count <= 0)
-            {
-                leafNodes.Add(node);
-                continue;
-            }
-
-            foreach (var chile in node.ChildNode)
-            {
-                queue.Enqueue((RoomNode)chile);
-            }
-        }
-
-        return leafNodes;
+        var corridorNode = corridorGenerator.GenerateCorridor(_roomNodeList, dungeonData);
+        corridorNode.ForEach(x => meshGenerator.CreateMesh(x.Pos));
     }
 }
