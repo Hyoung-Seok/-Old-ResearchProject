@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/1.Scenes/PCG/Dungeon.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/1.Scenes/PCG/Dungeon.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/BinarySpacePartitioning.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/BinarySpacePartitioning.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/LineDisplay.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/LineDisplay.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshCreater.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshCreater.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,11 +27,14 @@
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/Tile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/TileGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/BinarySpacePartitioning.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/LineDisplay.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/NodePosition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/NodeUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Editor/PerlinNoiseCustomInspector.cs" root0="FORCE_HIGHLIGHTING" />
@@ -141,6 +140,8 @@
       <workItem from="1745567443135" duration="4674000" />
       <workItem from="1746261329367" duration="1828000" />
       <workItem from="1746693637425" duration="17883000" />
+      <workItem from="1747054177493" duration="7071000" />
+      <workItem from="1747127150801" duration="13146000" />
     </task>
     <servers />
   </component>

@@ -10,6 +10,8 @@ public class MeshGenerator : MonoBehaviour
 
     public void CreateMesh(NodePosition position)
     {
+        if (position == null) return;
+        
         var vertices = new Vector3[]
         {
             ConvertNodePositionToVector3(position.TL),
