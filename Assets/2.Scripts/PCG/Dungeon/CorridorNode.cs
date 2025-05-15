@@ -107,7 +107,7 @@ public class CorridorNode : BSP_Node
             ? null
             : new NodePosition(
                 new Vector2Int(selectedLeftRoom.RoomPosition.BR.x, pos),
-                new Vector2Int(selectedRightRoom.RoomPosition.BL.x, pos - _width));
+                new Vector2Int(selectedRightRoom.RoomPosition.BL.x, pos + _width));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public class CorridorNode : BSP_Node
         if (leftTop.y <= rightTop.y && leftBottom.y >= rightBottom.y)
         {
             var bt = leftBottom + new Vector2Int(0, _interval);
-            var t = leftTop - new Vector2Int(0, _interval);
+            var t = leftTop - new Vector2Int(0, _interval + _width);
 
             return CalculateMidPoint(bt, t).y;
         }
@@ -136,7 +136,7 @@ public class CorridorNode : BSP_Node
         if (leftTop.y >= rightTop.y && leftBottom.y <= rightBottom.y)
         {
             var bt = rightBottom + new Vector2Int(0, _interval);
-            var t = rightTop - new Vector2Int(0, _interval);
+            var t = rightTop - new Vector2Int(0, _interval + _width);
 
             return CalculateMidPoint(bt, t).y;
         }
@@ -145,7 +145,7 @@ public class CorridorNode : BSP_Node
         if (leftTop.y >= rightTop.y && leftBottom.y >= rightBottom.y)
         {
             var bt = leftBottom + new Vector2Int(0, _interval);
-            var t = rightTop - new Vector2Int(0, _interval);
+            var t = rightTop - new Vector2Int(0, _interval + _width);
 
             return CalculateMidPoint(bt, t).y;
         }
@@ -154,7 +154,7 @@ public class CorridorNode : BSP_Node
         if (leftTop.y <= rightTop.y && leftBottom.y <= rightBottom.y)
         {
             var bt = rightBottom + new Vector2Int(0, _interval);
-            var t = leftTop - new Vector2Int(0, _interval);
+            var t = leftTop - new Vector2Int(0, _interval + _width);
 
             return CalculateMidPoint(bt, t).y;
         }

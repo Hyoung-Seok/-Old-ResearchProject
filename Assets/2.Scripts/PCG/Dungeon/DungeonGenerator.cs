@@ -35,7 +35,7 @@ public class DungeonGenerator : MonoBehaviour
         lineDisplay.DisplayLine(_leafNode);
         
         _leafNode.ForEach(x => meshGenerator.CreateMesh(x.RoomPosition));
-
+        
         var corridorNode = corridorGenerator.GenerateCorridor(_roomNodeList, dungeonData);
         corridorNode.ForEach(x => meshGenerator.CreateMesh(x.Pos));
     }

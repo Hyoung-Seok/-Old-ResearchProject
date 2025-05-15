@@ -43,8 +43,6 @@ public class RoomGenerator
             Random.Range(minTRX, max.x),
             Random.Range(minTRY, max.y));
 
-        node.AddRoomPosition(
-            new NodePosition(new Vector2Int(roomBL.x, roomTR.y),
-            new Vector2Int(roomTR.x, roomBL.y)));
+        node.AddRoomPosition(new NodePosition(roomBL, roomTR));
     }
 }
