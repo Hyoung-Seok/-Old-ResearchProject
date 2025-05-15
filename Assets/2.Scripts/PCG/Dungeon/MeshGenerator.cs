@@ -28,7 +28,8 @@ public class MeshGenerator : MonoBehaviour
 
         var triangles = new int[]
         {
-            0,1,2,2,1,3
+            0,1,2,
+            2,1,3
         };
 
         var mesh = new Mesh

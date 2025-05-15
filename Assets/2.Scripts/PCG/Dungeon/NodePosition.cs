@@ -7,12 +7,12 @@ public class NodePosition
     public Vector2Int BL { get; private set; }
     public Vector2Int BR { get; private set; }
 
-    public NodePosition(Vector2Int topLeft, Vector2Int bottomRight)
+    public NodePosition(Vector2Int bottomLeft, Vector2Int topRight)
     {
-        TL = topLeft;
-        BR = bottomRight;
-        TR = new Vector2Int(BR.x, TL.y);
-        BL = new Vector2Int(TL.x, BR.y);
+        BL = bottomLeft;
+        TR = topRight;
+        BR = new Vector2Int(TR.x, BL.y);
+        TL = new Vector2Int(BL.x, TR.y);
     }
 
     public Vector2Int[] GetPositionArray()
