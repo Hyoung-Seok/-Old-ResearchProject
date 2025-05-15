@@ -107,7 +107,7 @@ public class CorridorNode : BSP_Node
             ? null
             : new NodePosition(
                 new Vector2Int(selectedLeftRoom.RoomPosition.BR.x, pos),
-                new Vector2Int(selectedRightRoom.RoomPosition.BL.x, pos + _width));
+                new Vector2Int(selectedRightRoom.RoomPosition.TL.x, pos + _width));
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public class CorridorNode : BSP_Node
         }
         
         // 좌측 방이 우측 방보다 상단에 위치한다면
-        if (leftTop.y >= rightTop.y && leftBottom.y >= rightBottom.y)
+        if (leftBottom.y >= rightBottom.y && leftBottom.y <= rightTop.y)
         {
             var bt = leftBottom + new Vector2Int(0, _interval);
             var t = rightTop - new Vector2Int(0, _interval + _width);
@@ -151,7 +151,7 @@ public class CorridorNode : BSP_Node
         }
         
         // 좌측 방이 우측 방보다 하단에 위치한다면
-        if (leftTop.y <= rightTop.y && leftBottom.y <= rightBottom.y)
+        if (leftTop.y >= rightBottom.y && leftTop.y <= rightTop.y)
         {
             var bt = rightBottom + new Vector2Int(0, _interval);
             var t = leftTop - new Vector2Int(0, _interval + _width);
