@@ -21,7 +21,7 @@ public class DungeonGenerator : MonoBehaviour
         GenerateDungeon();
     }
 
-    private void GenerateDungeon()
+    public void GenerateDungeon()
     {
         var bsp = new BinarySpacePartitioning();
         var roomGenerator = new RoomGenerator();
@@ -38,5 +38,13 @@ public class DungeonGenerator : MonoBehaviour
         
         var corridorNode = corridorGenerator.GenerateCorridor(_roomNodeList, dungeonData);
         corridorNode.ForEach(x => meshGenerator.CreateMesh(x.Pos));
+    }
+
+    public void ResetDungeon()
+    {
+        for (var i = transform.childCount - 1; i >= 0; --i)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
     }
 }
