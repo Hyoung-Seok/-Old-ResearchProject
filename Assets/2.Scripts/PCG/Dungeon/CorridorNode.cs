@@ -11,8 +11,8 @@ public enum ERelative
 
 public class CorridorNode : BSP_Node
 {
-    private int _width;
-    private int _interval;
+    private readonly int _width;
+    private readonly int _interval;
 
     public CorridorNode(RoomNode node1, RoomNode node2, int width, int distanceFromWall) : base(null)
     {
@@ -56,7 +56,7 @@ public class CorridorNode : BSP_Node
         var leftRoomList = NodeUtility.GetAllLeafNode(leftRoom)
             .OrderByDescending(x => x.RoomPosition.TR.x).ToList();
 
-        if (leftRoomList.Count <= 0)
+        if (leftRoomList.Count <= 1)
         {
             selectedLeftRoom = leftRoom;
         }
@@ -113,56 +113,56 @@ public class CorridorNode : BSP_Node
 
     private void ConnectCorridorBottomTop(RoomNode bottom, RoomNode top)
     {
-        RoomNode selectedBottomNode = null;
+        RoomNode selectedBottomRoom = null;
         var bottomList = NodeUtility.GetAllLeafNode(bottom)
             .OrderByDescending(x => x.RoomPosition.TL.y).ToList();
 
         if (bottomList.Count <= 1)
         {
-            selectedBottomNode = bottom;
+            selectedBottomRoom = bottom;
         }
         else
         {
             var maxY = bottomList[0].RoomPosition.TL.y;
             bottomList = bottomList.Where(x => Mathf.Abs(maxY - x.RoomPosition.TL.y) < 10).ToList();
 
-            selectedBottomNode = bottomList[Random.Range(0, bottomList.Count)];
+            selectedBottomRoom = bottomList[Random.Range(0, bottomList.Count)];
         }
 
-        RoomNode selectedTopNode = null;
+        RoomNode selectedTopRoom = null;
         var topList = NodeUtility.GetAllLeafNode(top)
             .Where(x =>
-                FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition, x.RoomPosition) !=
+                FindConnectPositionInBottomTop(selectedBottomRoom.RoomPosition, x.RoomPosition) !=
                 -1).OrderBy(x => x.RoomPosition.BR.y).ToList();
 
         var pos = -1;
         if (topList.Count <= 0)
         {
-            selectedTopNode = top;
-            pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
-                selectedTopNode.RoomPosition);
+            selectedTopRoom = top;
+            pos = FindConnectPositionInBottomTop(selectedBottomRoom.RoomPosition,
+                selectedTopRoom.RoomPosition);
 
             while (pos != -1 && bottomList.Count > 0)
             {
-                bottomList.Remove(selectedBottomNode);
-                selectedBottomNode = bottomList[0];
+                bottomList.Remove(selectedBottomRoom);
+                selectedBottomRoom = bottomList[0];
                 
-                pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
-                    selectedTopNode.RoomPosition);
+                pos = FindConnectPositionInBottomTop(selectedBottomRoom.RoomPosition,
+                    selectedTopRoom.RoomPosition);
             }
         }
         else
         {
-            selectedTopNode = topList[0];
-            pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
-                selectedTopNode.RoomPosition);
+            selectedTopRoom = topList[0];
+            pos = FindConnectPositionInBottomTop(selectedBottomRoom.RoomPosition,
+                selectedTopRoom.RoomPosition);
         }
 
         Pos = (pos == -1)
             ? null
             : new NodePosition(
-                new Vector2Int(pos, selectedBottomNode.RoomPosition.TL.y),
-                new Vector2Int(pos + _width, selectedTopNode.RoomPosition.BR.y)
+                new Vector2Int(pos, selectedBottomRoom.RoomPosition.TL.y),
+                new Vector2Int(pos + _width, selectedTopRoom.RoomPosition.BR.y)
             );
     }
     
