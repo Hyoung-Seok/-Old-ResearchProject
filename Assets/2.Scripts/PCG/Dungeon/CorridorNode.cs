@@ -158,6 +158,14 @@ public class CorridorNode : BSP_Node
                 selectedTopRoom.RoomPosition);
         }
 
+        var bl = new Vector2Int(pos, selectedBottomRoom.RoomPosition.TL.y);
+        var tr = new Vector2Int(pos + _width, selectedTopRoom.RoomPosition.BR.y);
+
+        if (bl.x > tr.x && bl.y > tr.y)
+        {
+            Debug.Log("Size Revers");
+        }
+
         Pos = (pos == -1)
             ? null
             : new NodePosition(
@@ -172,44 +180,42 @@ public class CorridorNode : BSP_Node
         var leftBottom = left.BR;
         var rightTop = right.TL;
         var rightBottom = right.BL;
+
+        var min = new Vector2Int(-1, -1);
+        var max = new Vector2Int(-1, -1);
         
         // 좌측 방이 우측 방보다 작다면
         if (leftTop.y <= rightTop.y && leftBottom.y >= rightBottom.y)
         {
-            var bt = leftBottom + new Vector2Int(0, _interval);
-            var t = leftTop - new Vector2Int(0, _interval + _width);
-
-            return CalculateMidPoint(bt, t).y;
+            min = leftBottom + new Vector2Int(0, _interval);
+            max = leftTop - new Vector2Int(0, _interval + _width);
         }
-        
         // 좌측 방이 우측 방보다 크다면
-        if (leftTop.y >= rightTop.y && leftBottom.y <= rightBottom.y)
+        else if (leftTop.y >= rightTop.y && leftBottom.y <= rightBottom.y)
         {
-            var bt = rightBottom + new Vector2Int(0, _interval);
-            var t = rightTop - new Vector2Int(0, _interval + _width);
-
-            return CalculateMidPoint(bt, t).y;
+            min = rightBottom + new Vector2Int(0, _interval);
+            max = rightTop - new Vector2Int(0, _interval + _width);
         }
-        
         // 좌측 방이 우측 방보다 상단에 위치한다면
-        if (leftBottom.y >= rightBottom.y && leftBottom.y <= rightTop.y)
+        else if (leftBottom.y >= rightBottom.y && leftBottom.y <= rightTop.y)
         {
-            var bt = leftBottom + new Vector2Int(0, _interval);
-            var t = rightTop - new Vector2Int(0, _interval + _width);
-
-            return CalculateMidPoint(bt, t).y;
+            min = leftBottom + new Vector2Int(0, _interval);
+            max = rightTop - new Vector2Int(0, _interval + _width);
         }
-        
         // 좌측 방이 우측 방보다 하단에 위치한다면
-        if (leftTop.y >= rightBottom.y && leftTop.y <= rightTop.y)
+        else if (leftTop.y >= rightBottom.y && leftTop.y <= rightTop.y)
         {
-            var bt = rightBottom + new Vector2Int(0, _interval);
-            var t = leftTop - new Vector2Int(0, _interval + _width);
-
-            return CalculateMidPoint(bt, t).y;
+            min = rightBottom + new Vector2Int(0, _interval);
+            max = leftTop - new Vector2Int(0, _interval + _width);
         }
         
-        return -1;
+        // 예외처리
+        if (max.y - min.y < _width)
+        {
+            return -1;
+        }
+        
+        return CalculateMidPoint(min, max).y;
     }
 
     private int FindConnectPositionInBottomTop(NodePosition bottom, NodePosition top)
@@ -218,44 +224,43 @@ public class CorridorNode : BSP_Node
         var bottomRight = bottom.TR.x;
         var topLeft = top.BL.x;
         var topRight = top.BR.x;
+
+        var min = new Vector2Int(-1, -1);
+        var max = new Vector2Int(-1, -1);
         
-        // 상단에 위치한 방이 더 작다면
+        // 하단에 위치한 방이 더 작다면
         if (topLeft <= bottomLeft && topRight >= bottomRight)
         {
-            var min = new Vector2Int(topLeft + _interval, 0);
-            var max = new Vector2Int(topRight - (_interval + _width), 0);
-
-            return CalculateMidPoint(min, max).x;
+            min = new Vector2Int(bottomLeft + _interval, 0);
+            max = new Vector2Int(bottomRight - (_interval + _width), 0);
         }
-        
         // 상단에 위치한 방이 더 작다면
-        if (topLeft >= bottomLeft && topRight <= bottomRight)
+        else if (topLeft >= bottomLeft && topRight <= bottomRight)
         {
-            var min = new Vector2Int(bottomLeft + _interval, 0);
-            var max = new Vector2Int(bottomRight - (_interval + _width), 0);
-
-            return CalculateMidPoint(min, max).x;
+            min = new Vector2Int(topLeft + _interval, 0);
+            max = new Vector2Int(topRight - (_interval + _width), 0);
         }
-        
         // 상단 방이 우측에 위치할 때
-        if (bottomLeft <= topLeft && topLeft <= bottomRight)
+        else if (bottomLeft <= topLeft && topLeft <= bottomRight)
         {
-            var min = new Vector2Int(topLeft + _interval, 0);
-            var max = new Vector2Int(bottomRight - (_interval + _width), 0);
-
-            return CalculateMidPoint(min, max).x;
+            min = new Vector2Int(topLeft + _interval, 0);
+            max = new Vector2Int(bottomRight - (_interval + _width), 0);
         }
-        
         // 상단 방이 좌측에 위치할 때
-        if(bottomLeft <= topRight && topRight <= bottomRight)
+        else if(bottomLeft <= topRight && topRight <= bottomRight)
         {
-            var min = new Vector2Int(bottomLeft + _interval, 0);
-            var max = new Vector2Int(topRight - (_interval + _width), 0);
-
-            return CalculateMidPoint(min, max).x;
+            min = new Vector2Int(bottomLeft + _interval, 0);
+            max = new Vector2Int(topRight - (_interval + _width), 0);
         }
         
-        return -1;
+        // 예외처리
+        if (max.x - min.x < _width)
+        {
+            Debug.Log($"{max.x} - {min.x} = {max.x - min.x} / {_width}");
+            return -1;
+        }
+        
+        return CalculateMidPoint(min, max).x;
     }
 
     private Vector2Int CalculateMidPoint(Vector2Int v1, Vector2Int v2)
