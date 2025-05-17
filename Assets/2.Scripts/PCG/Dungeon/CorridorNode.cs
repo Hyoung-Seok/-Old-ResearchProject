@@ -158,14 +158,6 @@ public class CorridorNode : BSP_Node
                 selectedTopRoom.RoomPosition);
         }
 
-        var bl = new Vector2Int(pos, selectedBottomRoom.RoomPosition.TL.y);
-        var tr = new Vector2Int(pos + _width, selectedTopRoom.RoomPosition.BR.y);
-
-        if (bl.x > tr.x && bl.y > tr.y)
-        {
-            Debug.Log("Size Revers");
-        }
-
         Pos = (pos == -1)
             ? null
             : new NodePosition(
@@ -256,7 +248,6 @@ public class CorridorNode : BSP_Node
         // 예외처리
         if (max.x - min.x < _width)
         {
-            Debug.Log($"{max.x} - {min.x} = {max.x - min.x} / {_width}");
             return -1;
         }
         
