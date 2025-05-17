@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/BinarySpacePartitioning.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/BinarySpacePartitioning.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/NodePosition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/NodePosition.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomGenerator.cs" afterDir="false" />
-    </list>
+    <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +26,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/CorridorNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/Editor/DungeonEditor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/LineDisplay.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/MeshGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/NodePosition.cs" root0="FORCE_HIGHLIGHTING" />
@@ -145,6 +139,7 @@
       <workItem from="1747054177493" duration="7071000" />
       <workItem from="1747127150801" duration="13146000" />
       <workItem from="1747210292660" duration="16398000" />
+      <workItem from="1747299641917" duration="12333000" />
     </task>
     <servers />
   </component>

@@ -37,9 +37,11 @@ public class CorridorNode : BSP_Node
                 break;
             
             case ERelative.Top:
+                ConnectCorridorBottomTop(node1, node2);
                 break;
             
             case ERelative.Bottom:
+                ConnectCorridorBottomTop(node2, node1);
                 break;
             
             default:
@@ -68,7 +70,6 @@ public class CorridorNode : BSP_Node
 
             var index = Random.Range(0, leftRoomList.Count);
             selectedLeftRoom = leftRoomList[index];
-            
         }
         
         // 연결할 우측 노드 찾기
@@ -97,7 +98,7 @@ public class CorridorNode : BSP_Node
         }
         else
         {
-            // 연결 가능한 노드가 존재하니까, Range(0, rightRoomList.count)를 해서 랜덤하게 선택하던, 혹은 [0]으로 고정 선택하도록 변경
+            // 연결 가능한 노드가 존재하니까, 가장 가까운 노드를 선택
             selectedRightRoom = rightRoomList[0];
             pos = FindConnectPositionInLeftRight(selectedLeftRoom.RoomPosition,
                 selectedRightRoom.RoomPosition);
@@ -110,12 +111,61 @@ public class CorridorNode : BSP_Node
                 new Vector2Int(selectedRightRoom.RoomPosition.TL.x, pos + _width));
     }
 
-    /// <summary>
-    /// 복도를 생성할 중앙 지점을 찾는다.
-    /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns></returns>
+    private void ConnectCorridorBottomTop(RoomNode bottom, RoomNode top)
+    {
+        RoomNode selectedBottomNode = null;
+        var bottomList = NodeUtility.GetAllLeafNode(bottom)
+            .OrderByDescending(x => x.RoomPosition.TL.y).ToList();
+
+        if (bottomList.Count <= 1)
+        {
+            selectedBottomNode = bottom;
+        }
+        else
+        {
+            var maxY = bottomList[0].RoomPosition.TL.y;
+            bottomList = bottomList.Where(x => Mathf.Abs(maxY - x.RoomPosition.TL.y) < 10).ToList();
+
+            selectedBottomNode = bottomList[Random.Range(0, bottomList.Count)];
+        }
+
+        RoomNode selectedTopNode = null;
+        var topList = NodeUtility.GetAllLeafNode(top)
+            .Where(x =>
+                FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition, x.RoomPosition) !=
+                -1).OrderBy(x => x.RoomPosition.BR.y).ToList();
+
+        var pos = -1;
+        if (topList.Count <= 0)
+        {
+            selectedTopNode = top;
+            pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
+                selectedTopNode.RoomPosition);
+
+            while (pos != -1 && bottomList.Count > 0)
+            {
+                bottomList.Remove(selectedBottomNode);
+                selectedBottomNode = bottomList[0];
+                
+                pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
+                    selectedTopNode.RoomPosition);
+            }
+        }
+        else
+        {
+            selectedTopNode = topList[0];
+            pos = FindConnectPositionInBottomTop(selectedBottomNode.RoomPosition,
+                selectedTopNode.RoomPosition);
+        }
+
+        Pos = (pos == -1)
+            ? null
+            : new NodePosition(
+                new Vector2Int(pos, selectedBottomNode.RoomPosition.TL.y),
+                new Vector2Int(pos + _width, selectedTopNode.RoomPosition.BR.y)
+            );
+    }
+    
     private int FindConnectPositionInLeftRight(NodePosition left, NodePosition right)
     {
         var leftTop = left.TR;
@@ -162,6 +212,52 @@ public class CorridorNode : BSP_Node
         return -1;
     }
 
+    private int FindConnectPositionInBottomTop(NodePosition bottom, NodePosition top)
+    {
+        var bottomLeft = bottom.TL.x;
+        var bottomRight = bottom.TR.x;
+        var topLeft = top.BL.x;
+        var topRight = top.BR.x;
+        
+        // 상단에 위치한 방이 더 작다면
+        if (topLeft <= bottomLeft && topRight >= bottomRight)
+        {
+            var min = new Vector2Int(topLeft + _interval, 0);
+            var max = new Vector2Int(topRight - (_interval + _width), 0);
+
+            return CalculateMidPoint(min, max).x;
+        }
+        
+        // 상단에 위치한 방이 더 작다면
+        if (topLeft >= bottomLeft && topRight <= bottomRight)
+        {
+            var min = new Vector2Int(bottomLeft + _interval, 0);
+            var max = new Vector2Int(bottomRight - (_interval + _width), 0);
+
+            return CalculateMidPoint(min, max).x;
+        }
+        
+        // 상단 방이 우측에 위치할 때
+        if (bottomLeft <= topLeft && topLeft <= bottomRight)
+        {
+            var min = new Vector2Int(topLeft + _interval, 0);
+            var max = new Vector2Int(bottomRight - (_interval + _width), 0);
+
+            return CalculateMidPoint(min, max).x;
+        }
+        
+        // 상단 방이 좌측에 위치할 때
+        if(bottomLeft <= topRight && topRight <= bottomRight)
+        {
+            var min = new Vector2Int(bottomLeft + _interval, 0);
+            var max = new Vector2Int(topRight - (_interval + _width), 0);
+
+            return CalculateMidPoint(min, max).x;
+        }
+        
+        return -1;
+    }
+
     private Vector2Int CalculateMidPoint(Vector2Int v1, Vector2Int v2)
     {
         return (v1 + v2) / 2;
@@ -169,16 +265,15 @@ public class CorridorNode : BSP_Node
 
     private ERelative GetRelativePosition(RoomNode node1, RoomNode node2)
     {
-        var mid1 = (node1.Pos.BL + node1.Pos.TR) / 2;
-        var mid2 = (node2.Pos.BL + node2.Pos.TR) / 2;
+        var mid1 = (node1.Pos.TR + node1.Pos.BL) / 2;
+        var mid2 = (node2.Pos.TR + node2.Pos.BL) / 2;
 
         var angle = Mathf.Atan2(mid2.y - mid1.y, mid2.x - mid1.x);
         angle *= Mathf.Rad2Deg;
         
-        if (45f <= angle && angle <= 135f) return ERelative.Top;
-        if (-135f <= angle && angle <= -45f) return ERelative.Bottom;
-        if (-45f <= angle && angle >= 45f) return ERelative.Right;
-        
+        if (45f < angle && angle < 135f) return ERelative.Top;
+        if (-135f < angle && angle < -45f) return ERelative.Bottom;
+        if (-45f < angle && angle > 45f) return ERelative.Right;
         return ERelative.Left;
     }
     
