@@ -29,12 +29,12 @@ public class CorridorNode : BSP_Node
         switch (relative)
         {
             case ERelative.Right:
-                ConnectCorridorLeftRight(node2, node1);
+                ConnectCorridorLeftRight(node1, node2);
                 break;
             
             case ERelative.Left:
-                ConnectCorridorLeftRight(node1, node2);
-                break;
+                ConnectCorridorLeftRight(node2, node1);
+                break; 
             
             case ERelative.Top:
                 ConnectCorridorBottomTop(node1, node2);
@@ -269,8 +269,7 @@ public class CorridorNode : BSP_Node
         
         if (45f < angle && angle < 135f) return ERelative.Top;
         if (-135f < angle && angle < -45f) return ERelative.Bottom;
-        if (-45f < angle && angle > 45f) return ERelative.Right;
+        if ((0 <= angle && angle < 45) || (-45 < angle && angle <= 0)) return ERelative.Right;
         return ERelative.Left;
     }
-    
 }
