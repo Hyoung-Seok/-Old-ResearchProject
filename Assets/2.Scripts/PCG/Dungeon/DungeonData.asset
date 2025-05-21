@@ -23,5 +23,5 @@ MonoBehaviour:
   offset: {x: 3, y: 3}
   bottomLeftWeight: 0.1
   topRightWeight: 0.8
-  corridorWidth: 5
+  corridorWidth: 8
   distanceFromWall: 1

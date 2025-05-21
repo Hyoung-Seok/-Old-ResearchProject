@@ -38,6 +38,8 @@ public class DungeonGenerator : MonoBehaviour
         
         var corridorNode = corridorGenerator.GenerateCorridor(_roomNodeList, dungeonData);
         corridorNode.ForEach(x => meshGenerator.CreateMesh(x.Pos));
+        
+        meshGenerator.CreateWall();
     }
 
     public void ResetDungeon()

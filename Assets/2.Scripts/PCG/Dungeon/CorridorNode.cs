@@ -87,7 +87,7 @@ public class CorridorNode : BSP_Node
             pos = FindConnectPositionInLeftRight(selectedLeftRoom.RoomPosition,
                 selectedRightRoom.RoomPosition);
 
-            while (leftRoomList.Count > 0 && pos == -1)
+            while (pos != -1 && leftRoomList.Count - 1 > 0)
             {
                 leftRoomList.Remove(selectedLeftRoom);
                 selectedLeftRoom = leftRoomList[0];
@@ -142,7 +142,7 @@ public class CorridorNode : BSP_Node
             pos = FindConnectPositionInBottomTop(selectedBottomRoom.RoomPosition,
                 selectedTopRoom.RoomPosition);
 
-            while (pos != -1 && bottomList.Count > 0)
+            while (pos != -1 && bottomList.Count - 1 > 0)
             {
                 bottomList.Remove(selectedBottomRoom);
                 selectedBottomRoom = bottomList[0];
@@ -168,6 +168,8 @@ public class CorridorNode : BSP_Node
     
     private int FindConnectPositionInLeftRight(NodePosition left, NodePosition right)
     {
+        if (left == null || right == null) return -1;
+        
         var leftTop = left.TR;
         var leftBottom = left.BR;
         var rightTop = right.TL;
@@ -212,6 +214,8 @@ public class CorridorNode : BSP_Node
 
     private int FindConnectPositionInBottomTop(NodePosition bottom, NodePosition top)
     {
+        if (bottom == null || top == null) return -1;
+        
         var bottomLeft = bottom.TL.x;
         var bottomRight = bottom.TR.x;
         var topLeft = top.BL.x;
