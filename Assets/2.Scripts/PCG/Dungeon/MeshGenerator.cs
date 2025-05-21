@@ -10,8 +10,8 @@ public class MeshGenerator : MonoBehaviour
     [SerializeField] private GameObject horizontalWall;
     [SerializeField] private GameObject verticalWall;
 
-    private static List<Vector3Int> _wallHorizontal = new List<Vector3Int>();
-    private static List<Vector3Int> _wallVertical = new List<Vector3Int>();
+    private static HashSet<Vector3Int> _wallHorizontal = new HashSet<Vector3Int>();
+    private static HashSet<Vector3Int> _wallVertical = new HashSet<Vector3Int>();
 
     public void CreateMesh(NodePosition position)
     {
@@ -96,13 +96,13 @@ public class MeshGenerator : MonoBehaviour
         switch (dir)
         {
           case ELine.Horizontal:
-              if (_wallHorizontal.Contains(pos)) _wallHorizontal.Remove(pos);
-              else _wallHorizontal.Add(pos);
+              if(_wallHorizontal.Add(pos) == false) 
+                  _wallHorizontal.Remove(pos);
               break;
           
           case ELine.Vertical:
-              if (_wallVertical.Contains(pos)) _wallVertical.Remove(pos);
-              else _wallVertical.Add(pos);
+              if (_wallVertical.Add(pos) == false) 
+                  _wallVertical.Remove(pos);
               break;
           
           case ELine.None:
