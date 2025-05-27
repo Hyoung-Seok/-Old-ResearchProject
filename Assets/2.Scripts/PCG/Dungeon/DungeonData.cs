@@ -20,6 +20,10 @@ public class DungeonData : ScriptableObject
     [SerializeField, Range(0f, 0.4f)] private float bottomLeftWeight;
     [SerializeField, Range(0.6f, 0.9f)] private float topRightWeight;
 
+    [Header("Corridor Setting")] 
+    [SerializeField] private int corridorWidth;
+    [SerializeField] private int distanceFromWall;
+
     public int Width => width;
     public int Height => height;
     public int RoomMinWidth => roomMinWidth;
@@ -31,4 +35,6 @@ public class DungeonData : ScriptableObject
     public float HorizontalRatio => horizontalRatio;
     public float VerticalRatio => verticalRatio;
     public float SplitRange => splitRange;
+    public int CorridorWidth => corridorWidth;
+    public int DistanceFromWall => distanceFromWall;
 }

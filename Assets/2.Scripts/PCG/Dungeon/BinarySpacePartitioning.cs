@@ -20,8 +20,8 @@ public class BinarySpacePartitioning
         _data = data;
         _checkConditions = checkConditions;
 
-        var rootPos = new NodePosition(new Vector2Int(0, _data.Height), 
-            new Vector2Int(_data.Width, 0));
+        var rootPos =
+            new NodePosition(new Vector2Int(0, 0), new Vector2Int(_data.Width, _data.Height));
         var rootNode = new RoomNode(null, rootPos, 0);
 
         var result = new List<RoomNode> { rootNode };
@@ -64,9 +64,10 @@ public class BinarySpacePartitioning
                 newPos = _checkConditions ? 
                     GetSplitPos(node.Height, _data.RoomMinHeight, curPos.BL.y) :
                     Random.Range(curPos.BL.y + _data.RoomMinHeight, curPos.TL.y - _data.RoomMinHeight);
-
-                pos1 = new NodePosition(curPos.TL, new Vector2Int(curPos.BR.x, newPos));
-                pos2 = new NodePosition(new Vector2Int(curPos.BL.x, newPos), curPos.BR);
+                
+                pos1 = new NodePosition(curPos.BL, new Vector2Int(curPos.BR.x, newPos));
+                pos2 = new NodePosition(new Vector2Int(curPos.BL.x, newPos), curPos.TR);
+                
                 break;
 
             case ELine.Vertical:
@@ -74,8 +75,8 @@ public class BinarySpacePartitioning
                     GetSplitPos(node.Width, _data.RoomMinWidth, curPos.BL.x) :
                     Random.Range(curPos.BL.x + _data.RoomMinWidth, curPos.BR.x - _data.RoomMinWidth);
 
-                pos1 = new NodePosition(curPos.TL, new Vector2Int(newPos, curPos.BL.y));
-                pos2 = new NodePosition(new Vector2Int(newPos, curPos.TL.y), curPos.BR);
+                pos1 = new NodePosition(curPos.BL, new Vector2Int(newPos, curPos.TL.y));
+                pos2 = new NodePosition(new Vector2Int(newPos, curPos.BL.y), curPos.TR);
                 break;
 
             case ELine.None:
@@ -97,25 +98,21 @@ public class BinarySpacePartitioning
     {
         var range = (size - minSize * 2) / 2;
         var mid = corner + size / 2;
-        
+
         var splitRatio = _data.SplitRange;
         var offset = (int)(range * splitRatio);
-        var checkSize = offset * 2;
-        
-        while (checkSize < minSize * 2)
-        {
-            splitRatio += 0.1f;
 
-            if (splitRatio > 1f)
-            {
-                return mid;
-            }
-            
-            offset = (int)(range * splitRatio);
-            checkSize = offset * 2;
-            
+        var splitPos = Random.Range(mid - offset, mid + offset);
+
+        var sizeCheck1 = Mathf.Abs(splitPos - corner);
+        var sizeCheck2 = Mathf.Abs(size - sizeCheck1);
+
+        if (sizeCheck1 < minSize || sizeCheck2 < minSize)
+        {
+            return mid;
         }
-        return Random.Range(mid - offset, mid + offset);
+
+        return splitPos;
     }
 
     private ELine CheckSizeRatio(RoomNode node)

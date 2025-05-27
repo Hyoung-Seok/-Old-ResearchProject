@@ -21,42 +21,31 @@ public class DungeonGenerator : MonoBehaviour
         GenerateDungeon();
     }
 
-    private void GenerateDungeon()
+    public void GenerateDungeon()
     {
         var bsp = new BinarySpacePartitioning();
         var roomGenerator = new RoomGenerator();
+        var corridorGenerator = new CorridorGenerator();
         
         _roomNodeList = bsp.BSP(dungeonData, checkConditions);
-        _leafNode = GetAllLeafNode();
+        _leafNode = NodeUtility.GetAllLeafNode(_roomNodeList[0]);
         
         roomGenerator.GenerateRoom(_leafNode, dungeonData);
         lineDisplay.DisplayLine(_roomNodeList[0]);
-        lineDisplay.DisplayLine(_leafNode);
         
         _leafNode.ForEach(x => meshGenerator.CreateMesh(x.RoomPosition));
+        
+        var corridorNode = corridorGenerator.GenerateCorridor(_roomNodeList, dungeonData);
+        corridorNode.ForEach(x => meshGenerator.CreateMesh(x.Pos));
+        
+        meshGenerator.CreateWall();
     }
 
-    private List<RoomNode> GetAllLeafNode()
+    public void ResetDungeon()
     {
-        var leafNodes = new List<RoomNode>();
-        var queue = new Queue<RoomNode>(new[] { _roomNodeList[0] });
-
-        while (queue.Count > 0)
+        for (var i = transform.childCount - 1; i >= 0; --i)
         {
-            var node = queue.Dequeue();
-
-            if (node.ChildNode.Count <= 0)
-            {
-                leafNodes.Add(node);
-                continue;
-            }
-
-            foreach (var chile in node.ChildNode)
-            {
-                queue.Enqueue((RoomNode)chile);
-            }
+            DestroyImmediate(transform.GetChild(i).gameObject);
         }
-
-        return leafNodes;
     }
 }
