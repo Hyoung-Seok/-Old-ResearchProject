@@ -16,7 +16,7 @@ MonoBehaviour:
   height: 200
   roomMinWidth: 28
   roomMinHeight: 28
-  iteration: 10
+  iteration: 12
   horizontalRatio: 1.25
   verticalRatio: 0.8
   splitRange: 1

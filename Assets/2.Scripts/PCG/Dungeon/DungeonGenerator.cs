@@ -32,7 +32,6 @@ public class DungeonGenerator : MonoBehaviour
         
         roomGenerator.GenerateRoom(_leafNode, dungeonData);
         lineDisplay.DisplayLine(_roomNodeList[0]);
-        lineDisplay.DisplayLine(_leafNode);
         
         _leafNode.ForEach(x => meshGenerator.CreateMesh(x.RoomPosition));
         
