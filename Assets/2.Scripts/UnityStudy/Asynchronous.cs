@@ -9,6 +9,12 @@ public class Asynchronous : MonoBehaviour
     {
         _ = PrintNumberAsync("A");
         _ = PrintNumberAsync("B");
+
+        var customEnumerator = new CustomEnumerator();
+        foreach (var temp in customEnumerator)
+        {
+            
+        }
     }
 
     private async Task PrintNumberAsync(string name)
