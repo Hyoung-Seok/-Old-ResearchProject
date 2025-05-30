@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="53ed2a7a-3e44-42d3-a9db-0f8ebab7546c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ResearchProject/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/1.Scenes/PCG/Dungeon.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/1.Scenes/PCG/Dungeon.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonData.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/DungeonGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/PCG/PerlinNoise/FalloffMap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/PCG/PerlinNoise/FalloffMap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/1.Scenes/UnityStudy/Coroutine.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/1.Scenes/UnityStudy/Coroutine.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/2.Scripts/UnityStudy/Asynchronous.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/2.Scripts/UnityStudy/Asynchronous.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +17,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/81/a6369561/IEnumerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/de/a9a887f5/IEnumerator`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/Graph/GraphGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/MazeData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/Algorithm/PathFinding/PathUtils.cs" root0="FORCE_HIGHLIGHTING" />
@@ -40,6 +39,8 @@
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Dungeon/RoomNode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/PCG/Editor/PerlinNoiseCustomInspector.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/UnityStudy/CoroutineStopTest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/2.Scripts/UnityStudy/CustomEnumerator.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -58,7 +59,7 @@
     &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;PCG/Dungeon&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Study/Coruotine&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -152,6 +153,8 @@
       <workItem from="1747816674025" duration="8540000" />
       <workItem from="1747904595857" duration="5966000" />
       <workItem from="1748197091356" duration="1130000" />
+      <workItem from="1748340561749" duration="3774000" />
+      <workItem from="1748513061031" duration="4852000" />
     </task>
     <servers />
   </component>
