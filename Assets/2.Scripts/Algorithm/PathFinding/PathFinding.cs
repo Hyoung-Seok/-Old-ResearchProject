@@ -203,13 +203,13 @@ namespace PathFinding
                     // 상하좌우 4방향만 이동 가능하고, 모든 가중치가 동일하다면, 이미 열린 목록을 확인할 필요는 없음.
                     if (openSetDic.TryGetValue((yPos, xPos), out var neighbor) == true)
                     {
-                        // 이웃한 노드를 거쳐, 현재 노드로 올 때의 Weight값 계산
+                        // 현재 노드에서 이웃한 노드로 갈 때의 g(n)값 계산
                         var neighborWeight = tile[yPos, xPos].Weight;
                         var g = current < 4
                             ? curNode.G + neighborWeight
                             : curNode.G + neighborWeight * 1.4f;
                         
-                        // 만약, 이웃노드->현재노드로 올 때의 값이, 이웃 노드의 g(n)보다 작다면 부모 및 g(n)값 갱신
+                        // 현재 -> 이웃 노드로 갈 때의 g(n)값이 이웃 노드의 g(n)값보다 작다면 갱신
                         if (g < neighbor.G)
                         {
                             neighbor.G = g;
