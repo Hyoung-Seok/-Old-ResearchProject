@@ -10,6 +10,11 @@ public class SizeController : MonoBehaviour
     {
         obj.transform.localScale = scale;
     }
+    
+    public void ChangeScale(Vector3 s)
+    {
+        obj.transform.localScale = s;
+    }
 
     private void Update()
     {
