@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SizeController : MonoBehaviour
@@ -8,5 +9,10 @@ public class SizeController : MonoBehaviour
     public void ChangeScale()
     {
         obj.transform.localScale = scale;
+    }
+
+    private void Update()
+    {
+        ChangeScale();
     }
 }
