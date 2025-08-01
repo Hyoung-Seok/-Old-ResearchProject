@@ -7,10 +7,9 @@ public class MonsterData : ScriptableObject
     [SerializeField] private string monsterName;
     [SerializeField] private float hp;
     [SerializeField] private float damage;
-    [SerializeField] private int lv;
+    public int LV;
 
     public string MonsterName => monsterName;
     public float Hp => hp;
     public float Damage => damage;
-    public int Lv => lv;
 }

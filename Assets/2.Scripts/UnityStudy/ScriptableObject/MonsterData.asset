@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6979f811483431e45ad9571d101166e9, type: 3}
   m_Name: MonsterData
   m_EditorClassIdentifier: 
-  name: "\uB290\uB9B0\uC880\uBE44"
+  monsterName: "\uB290\uB9B0\uC880\uBE44"
   hp: 100
   damage: 10
-  lv: 5
+  LV: 1
