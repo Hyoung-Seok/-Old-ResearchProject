@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class QuadTreeManager : MonoBehaviour
 {
     [Header("Component")] 
     [SerializeField] private ObjectRandomSpawner objectSpawner;
+    public QNode RootNode { get; private set; }
     
     public void GenerateQuadTree(int includeCount)
     {
@@ -14,14 +16,14 @@ public class QuadTreeManager : MonoBehaviour
         var objList = objectSpawner.GetSpawnObjectsOrNull();
         if (objList == null) return;
         
-        var rootNode = new GameObject("RootNode").AddComponent<QNode>();
+        RootNode = new GameObject("RootNode").AddComponent<QNode>();
         
-        rootNode.transform.SetParent(transform);
-        rootNode.SetPosition(ConvertVector3ToVector2(transform.Find("LeftBottom").position),
+        RootNode.transform.SetParent(transform);
+        RootNode.SetPosition(ConvertVector3ToVector2(transform.Find("LeftBottom").position),
             ConvertVector3ToVector2(transform.Find("RightTop").position));
         
         var stack = new Stack<QNode>();
-        stack.Push(rootNode);
+        stack.Push(RootNode);
 
         while (stack.Count > 0)
         {
