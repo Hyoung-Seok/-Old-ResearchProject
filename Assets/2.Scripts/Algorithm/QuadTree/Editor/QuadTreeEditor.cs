@@ -31,20 +31,19 @@ public class QuadTreeEditor : EditorWindow
         
         GUILayout.Space(10);
 
-        _objectCount = EditorGUILayout.IntField("객체 수 입력", 0);
+        _objectCount = EditorGUILayout.IntField("객체 수 입력", _objectCount);
         
         GUILayout.Space(5);
 
         if (GUILayout.Button("Bake"))
         {
-            
+            FindFirstObjectByType<QuadTreeManager>().GenerateQuadTree(_objectCount);
         }
     }
 
     private void OnEnable()
     {
         var parent = GameObject.Find("QuadTree").transform;
-        Debug.Log("Enable");
         
         if (_leftBottom == null)
         {
