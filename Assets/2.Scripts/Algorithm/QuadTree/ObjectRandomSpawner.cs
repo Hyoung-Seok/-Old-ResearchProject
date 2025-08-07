@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -47,7 +48,7 @@ public class ObjectRandomSpawner : MonoBehaviour
             if (canSpawn)
             {
                 pos.y += yClamp;
-                var obj = Instantiate(spawnObject, pos, quaternion.identity);
+                var obj = Instantiate(spawnObject, pos, quaternion.identity).GetComponent<EnemyObject>();
                 obj.transform.SetParent(transform);
 
                 currentCount++;
@@ -65,6 +66,21 @@ public class ObjectRandomSpawner : MonoBehaviour
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
+    }
+
+    public List<EnemyObject> GetSpawnObjectsOrNull()
+    {
+        var objList = new List<EnemyObject>();
+
+        for (var i = 0; i < transform.childCount; ++i)
+        {
+            if (transform.GetChild(i).TryGetComponent(out EnemyObject obj) == true)
+            {
+                objList.Add(obj);
+            }
+        }
+
+        return objList.Count == 0 ? null : objList;
     }
 
     private Vector3 CalculateSpawnPosition()
