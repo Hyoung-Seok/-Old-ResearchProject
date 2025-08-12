@@ -6,7 +6,7 @@ using UnityEngine;
 public class QuadTreeEditor : EditorWindow
 {
     private int _objectCount;
-    private static QuadTreeManager _quadTreeManager = null;
+    private QuadTreeManager _quadTreeManager = null;
 
     private GameObject _leftBottom;
     private GameObject _rightTop;
@@ -18,8 +18,6 @@ public class QuadTreeEditor : EditorWindow
 
         window.position = new Rect(800, 500, 500, 800);
         window.Show();
-        
-        _quadTreeManager = FindFirstObjectByType<QuadTreeManager>();
     }
 
     public void OnGUI()
@@ -48,6 +46,7 @@ public class QuadTreeEditor : EditorWindow
     private void OnEnable()
     {
         var parent = GameObject.Find("QuadTree").transform;
+        _quadTreeManager = FindFirstObjectByType<QuadTreeManager>();
         
         if (_leftBottom == null)
         {
@@ -59,6 +58,17 @@ public class QuadTreeEditor : EditorWindow
         {
             _rightTop = new GameObject("RightTop");
             _rightTop.transform.SetParent(parent);
+        }
+
+        if (_quadTreeManager.RootNode != null)
+        {
+            _leftBottom.transform.position =
+                new Vector3(_quadTreeManager.RootNode.LeftBottom.x, 0,
+                    _quadTreeManager.RootNode.LeftBottom.y);
+            
+            _rightTop.transform.position =
+                new Vector3(_quadTreeManager.RootNode.RightTop.x, 0,
+                    _quadTreeManager.RootNode.RightTop.y);
         }
 
         SceneView.duringSceneGui += OnSceneGUI;
