@@ -7,6 +7,9 @@ using Random = UnityEngine.Random;
 
 public class ObjectRandomSpawner : MonoBehaviour
 {
+    [Header("Debug")] 
+    [SerializeField] private bool isDrawGizmo = true;
+    
     [Header("Spawn Range")]
     [SerializeField] private Vector3 center;
     [SerializeField] private float radius;
@@ -15,11 +18,9 @@ public class ObjectRandomSpawner : MonoBehaviour
     [SerializeField] private GameObject spawnObject;
     [SerializeField] private int spawnCount;
     [SerializeField] private float checkSize;
-    [SerializeField] private float maxHeight;
     [SerializeField] private float yClamp;
     
     [Header("Layer")]
-    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private string objectTag;
     
     public void SpawnObjects()
@@ -47,7 +48,6 @@ public class ObjectRandomSpawner : MonoBehaviour
 
             if (canSpawn)
             {
-                pos.y += yClamp;
                 var obj = Instantiate(spawnObject, pos, quaternion.identity).GetComponent<EnemyObject>();
                 obj.transform.SetParent(transform);
 
@@ -86,20 +86,16 @@ public class ObjectRandomSpawner : MonoBehaviour
     private Vector3 CalculateSpawnPosition()
     {
         var randPos = Random.insideUnitCircle * radius;
-        var spawnPoint = center + new Vector3(randPos.x, maxHeight, randPos.y);
-
-        var ray = new Ray(spawnPoint, Vector3.down);
-        if (Physics.Raycast(ray, out var hit, maxHeight, groundLayer))
-        {
-            spawnPoint.y = hit.point.y;
-        }
-
+        var spawnPoint = center + new Vector3(randPos.x, yClamp, randPos.y);
+        
         return spawnPoint;
     }
     
     #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        if (isDrawGizmo == false) return;
+        
         Handles.color = Color.magenta;
         Handles.DrawWireDisc(center, Vector3.up, radius);
     }
