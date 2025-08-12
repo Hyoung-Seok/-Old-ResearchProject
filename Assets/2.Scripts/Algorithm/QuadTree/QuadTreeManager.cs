@@ -23,6 +23,8 @@ public class QuadTreeManager : MonoBehaviour
         var stack = new Stack<QNode>();
         stack.Push(rootNode);
 
+        var leftNode = new List<QNode>();
+
         while (stack.Count > 0)
         {
             var node = stack.Pop();
@@ -34,8 +36,12 @@ public class QuadTreeManager : MonoBehaviour
                     node.IncludeObjectIndex.Add(i);  
                 }
             }
-            
-            if (node.IncludeObjectIndex.Count < includeCount) continue;
+
+            if (node.IncludeObjectIndex.Count < includeCount)
+            {
+                leftNode.Add(node);
+                continue;
+            }
             
             SplitNode(node);
             for (var i = 0; i < 4; ++i)
@@ -43,6 +49,8 @@ public class QuadTreeManager : MonoBehaviour
                 stack.Push(node.ChildNodes[i]);
             }
         }
+        
+        leftNode.ForEach(x => x.UpdateIncludeObject(objList));
     }
 
     private void SplitNode(QNode node)
