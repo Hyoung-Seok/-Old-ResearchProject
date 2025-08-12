@@ -6,7 +6,7 @@ using UnityEngine;
 public class QuadTreeEditor : EditorWindow
 {
     private int _objectCount;
-    private QuadTreeManager _quadTreeManager = null;
+    private static QuadTreeManager _quadTreeManager = null;
 
     private GameObject _leftBottom;
     private GameObject _rightTop;
@@ -18,6 +18,8 @@ public class QuadTreeEditor : EditorWindow
 
         window.position = new Rect(800, 500, 500, 800);
         window.Show();
+        
+        _quadTreeManager = FindFirstObjectByType<QuadTreeManager>();
     }
 
     public void OnGUI()
@@ -39,7 +41,6 @@ public class QuadTreeEditor : EditorWindow
 
         if (GUILayout.Button("Bake"))
         {
-            _quadTreeManager = FindFirstObjectByType<QuadTreeManager>();
             _quadTreeManager.GenerateQuadTree(_objectCount);
         }
     }
@@ -86,7 +87,7 @@ public class QuadTreeEditor : EditorWindow
         var rtT = _rightTop.transform.position;
 
         DrawLine(new Vector2(lbT.x, lbT.z), new Vector2(rtT.x, rtT.z), Color.red);
-
+        
         if (_quadTreeManager == null || _quadTreeManager.RootNode == null) return;
         RecursiveDrawLine(_quadTreeManager.RootNode);
     }
