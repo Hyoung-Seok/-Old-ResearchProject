@@ -8,6 +8,7 @@ public class QuadTreeManager : MonoBehaviour
     [Header("Component")] 
     [SerializeField] private ObjectRandomSpawner objectSpawner;
     [SerializeField] private QNode rootNode;
+    [SerializeField] private List<QNode> leftNodes;
     
     public QNode RootNode => rootNode;
     
@@ -23,7 +24,7 @@ public class QuadTreeManager : MonoBehaviour
         var stack = new Stack<QNode>();
         stack.Push(rootNode);
 
-        var leftNode = new List<QNode>();
+        leftNodes = new List<QNode>();
 
         while (stack.Count > 0)
         {
@@ -39,7 +40,7 @@ public class QuadTreeManager : MonoBehaviour
 
             if (node.IncludeObjectIndex.Count < includeCount)
             {
-                leftNode.Add(node);
+                leftNodes.Add(node);
                 continue;
             }
             
@@ -50,7 +51,7 @@ public class QuadTreeManager : MonoBehaviour
             }
         }
         
-        leftNode.ForEach(x => x.UpdateIncludeObject(objList));
+        leftNodes.ForEach(x => x.UpdateIncludeObject(objList));
     }
 
     private void SplitNode(QNode node)
