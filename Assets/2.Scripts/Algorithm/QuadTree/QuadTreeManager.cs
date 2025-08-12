@@ -7,7 +7,9 @@ public class QuadTreeManager : MonoBehaviour
 {
     [Header("Component")] 
     [SerializeField] private ObjectRandomSpawner objectSpawner;
-    public QNode RootNode { get; private set; }
+    [SerializeField] private QNode rootNode;
+    
+    public QNode RootNode => rootNode;
     
     public void GenerateQuadTree(int includeCount)
     {
@@ -16,14 +18,10 @@ public class QuadTreeManager : MonoBehaviour
         var objList = objectSpawner.GetSpawnObjectsOrNull();
         if (objList == null) return;
         
-        RootNode = new GameObject("RootNode").AddComponent<QNode>();
-        
-        RootNode.transform.SetParent(transform);
-        RootNode.SetPosition(ConvertVector3ToVector2(transform.Find("LeftBottom").position),
-            ConvertVector3ToVector2(transform.Find("RightTop").position));
+        SetRootNode();
         
         var stack = new Stack<QNode>();
-        stack.Push(RootNode);
+        stack.Push(rootNode);
 
         while (stack.Count > 0)
         {
@@ -73,6 +71,20 @@ public class QuadTreeManager : MonoBehaviour
             new Vector2(rt.x, mid.y));
         node.ChildNodes[3].transform.SetParent(node.transform);
     }
+
+    private void SetRootNode()
+    {
+        if (rootNode != null)
+        {
+            DestroyImmediate(rootNode.gameObject);
+        }
+        
+        rootNode = new GameObject("RootNode").AddComponent<QNode>();
+
+        rootNode.transform.SetParent(transform);
+        rootNode.SetPosition(ConvertVector3ToVector2(transform.Find("LeftBottom").position),
+            ConvertVector3ToVector2(transform.Find("RightTop").position));
+    }
     
     private bool CheckObjectInNode(Vector3 pos, QNode node)
     {
@@ -99,5 +111,4 @@ public class QuadTreeManager : MonoBehaviour
     {
         return new Vector2(pos.x, pos.z);
     }
-    
 }
