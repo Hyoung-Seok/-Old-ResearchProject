@@ -5,27 +5,30 @@ using UnityEngine;
 [Serializable]
 public class QNode : MonoBehaviour
 {
-    public Vector2 LeftBottom { get; private set; }
-    public Vector2 RightTop { get; private set; }
+    [SerializeField] private Vector2 leftBottom;
+    [SerializeField] private Vector2 rightTop;
+
+    public Vector2 LeftBottom => leftBottom;
+    public Vector2 RightTop => rightTop;
     
     public List<int> IncludeObjectIndex = new List<int>();
     public QNode[] ChildNodes;
 
-    [SerializeField] private List<EnemyObject> includeObject;
+    private List<IQuadObject> _includeObject;
 
     public void SetPosition(Vector2 lb, Vector2 rt)
     {
-        LeftBottom = lb;
-        RightTop = rt;
+        leftBottom = lb;
+        rightTop = rt;
     }
 
-    public void UpdateIncludeObject(List<EnemyObject> objList)
+    public void UpdateIncludeObject(List<IQuadObject> objList)
     {
-        includeObject = new List<EnemyObject>();
+        _includeObject = new List<IQuadObject>();
 
         for (var i = 0; i < IncludeObjectIndex.Count; ++i)
         {
-            includeObject.Add(objList[IncludeObjectIndex[i]]);
+            _includeObject.Add(objList[IncludeObjectIndex[i]]);
         }
     }
 }
