@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
@@ -9,15 +10,53 @@ public class QuadTreeManager : MonoBehaviour
     [Header("Component")] 
     [SerializeField] private ObjectRandomSpawner objectSpawner;
     [SerializeField] private QNode rootNode;
-    [SerializeField, ReadOnly] private List<QNode> leftNodes;
+    [SerializeField] private Transform player;
     
     public QNode RootNode => rootNode;
 
+    private QNode _currentNode;
+    private QNode _prevNode;
+
     private void Start()
     {
-        SetLeafNodeIncludeObject();
+        var objList = objectSpawner.GetSpawnObjectsOrNull();
+        
+        var stack = new Stack<QNode>();
+        stack.Push(RootNode);
+
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+
+            if (node.ChildNodes.Length != 0)
+            {
+                for (var i = 0; i < 4; ++i)
+                {
+                    stack.Push(node.ChildNodes[i]);
+                }
+                
+                continue;
+            }
+            
+            node.UpdateIncludeObject(objList);
+        }
     }
-    
+
+    private void Update()
+    {
+        var currentNode = GetCurrentNode();
+
+        if (_prevNode == currentNode || currentNode == null)
+        {
+            return;
+        }
+        
+        if(_prevNode != null) _prevNode.SetStateIncludeObject(false);
+
+        _prevNode = currentNode;
+        currentNode.SetStateIncludeObject(true);
+    }
+
     public void GenerateQuadTree(int includeCount)
     {
         if(includeCount <= 0) return;
@@ -28,8 +67,6 @@ public class QuadTreeManager : MonoBehaviour
         SetRootNode();
         
         var stack = new Stack<QNode>();
-        leftNodes = new List<QNode>();
-        
         stack.Push(rootNode);
 
         while (stack.Count > 0)
@@ -44,11 +81,7 @@ public class QuadTreeManager : MonoBehaviour
                 }
             }
 
-            if (node.IncludeObjectIndex.Count < includeCount)
-            {
-                leftNodes.Add(node);
-                continue;
-            }
+            if (node.IncludeObjectIndex.Count < includeCount) continue;
             
             SplitNode(node);
             for (var i = 0; i < 4; ++i)
@@ -85,6 +118,35 @@ public class QuadTreeManager : MonoBehaviour
         node.ChildNodes[3].transform.SetParent(node.transform);
     }
 
+    private QNode GetCurrentNode()
+    {
+        var stack = new Stack<QNode>();
+        stack.Push(RootNode);
+
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+
+            if (node.ChildNodes.Length != 0)
+            {
+                for (var i = 0; i < 4; ++i)
+                {
+                    stack.Push(node.ChildNodes[i]);
+                }
+                
+                continue;
+            }
+
+            if (CheckObjectInNode(player.position, node) == true)
+            {
+                return node;
+            }
+        }
+        
+        // 플레이어가 분할 공간 밖에 있음
+        return null;
+    }
+
     private void SetRootNode()
     {
         if (rootNode != null)
@@ -112,12 +174,6 @@ public class QuadTreeManager : MonoBehaviour
         }
 
         return true;
-    }
-
-    private void SetLeafNodeIncludeObject()
-    {
-        var objList = objectSpawner.GetSpawnObjectsOrNull();
-        leftNodes.ForEach(x => x.UpdateIncludeObject(objList));
     }
 
     private Vector2 CalculateMidPoint(QNode node)
