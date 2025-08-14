@@ -1,37 +1,40 @@
 using System;
 using UnityEngine;
 
-public class EnemyObject : MonoBehaviour
+public class EnemyObject : MonoBehaviour, IQuadObject
 {
     [Header("Mat")] 
     [SerializeField] private Material enableMat;
     [SerializeField] private Material disableMat;
 
+    private Action _updateAction;
     private Renderer _renderer;
-    
-    private void Update()
+
+    private void Start()
     {
-        var obj = new GameObject("Empty");
-        Destroy(obj);
+        _renderer = gameObject.GetComponent<Renderer>();
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        if (_renderer == null)
-        {
-            _renderer = gameObject.GetComponent<Renderer>();
-        }
-        
+        _updateAction?.Invoke();
+    }
+
+    public void EnableObject()
+    {
+        _updateAction += PerformanceTestFunction;
         _renderer.material = enableMat;
     }
 
-    private void OnDisable()
+    public void DisableObject()
     {
-        if (_renderer == null)
-        {
-            return;
-        }
-        
+        _updateAction -= PerformanceTestFunction;
         _renderer.material = disableMat;
+    }
+
+    private void PerformanceTestFunction()
+    {
+        var obj = new GameObject("Empty");
+        Destroy(obj);
     }
 }

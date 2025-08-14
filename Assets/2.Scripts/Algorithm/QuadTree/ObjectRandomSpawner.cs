@@ -68,13 +68,13 @@ public class ObjectRandomSpawner : MonoBehaviour
         }
     }
 
-    public List<EnemyObject> GetSpawnObjectsOrNull()
+    public List<IQuadObject> GetSpawnObjectsOrNull()
     {
-        var objList = new List<EnemyObject>();
+        var objList = new List<IQuadObject>();
 
         for (var i = 0; i < transform.childCount; ++i)
         {
-            if (transform.GetChild(i).TryGetComponent(out EnemyObject obj) == true)
+            if (transform.GetChild(i).TryGetComponent(out IQuadObject obj) == true)
             {
                 objList.Add(obj);
             }
