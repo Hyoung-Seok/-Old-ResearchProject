@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 
 public class QuadTreeManager : MonoBehaviour
@@ -13,8 +10,6 @@ public class QuadTreeManager : MonoBehaviour
     [SerializeField] private Transform player;
     
     public QNode RootNode => rootNode;
-
-    private QNode _currentNode;
     private QNode _prevNode;
 
     private void Start()
