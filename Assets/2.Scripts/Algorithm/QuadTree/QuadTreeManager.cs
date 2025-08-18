@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class QuadTreeManager : MonoBehaviour
@@ -39,13 +40,9 @@ public class QuadTreeManager : MonoBehaviour
 
     private void Update()
     {
-        var currentNode = GetCurrentNode();
+        var currentNode = GetCurrentNode(RootNode);
 
-        if (_prevNode == currentNode || currentNode == null)
-        {
-            return;
-        }
-        
+        if (_prevNode == currentNode || currentNode == null) return;
         if(_prevNode != null) _prevNode.SetStateIncludeObject(false);
 
         _prevNode = currentNode;
@@ -113,32 +110,21 @@ public class QuadTreeManager : MonoBehaviour
         node.ChildNodes[3].transform.SetParent(node.transform);
     }
 
-    private QNode GetCurrentNode()
+    private QNode GetCurrentNode(QNode node)
     {
-        var stack = new Stack<QNode>();
-        stack.Push(RootNode);
-
-        while (stack.Count > 0)
+        if (node.ChildNodes == null || node.ChildNodes.Length == 0)
         {
-            var node = stack.Pop();
-
-            if (node.ChildNodes.Length != 0)
-            {
-                for (var i = 0; i < 4; ++i)
-                {
-                    stack.Push(node.ChildNodes[i]);
-                }
-                
-                continue;
-            }
-
-            if (CheckObjectInNode(player.position, node) == true)
-            {
-                return node;
-            }
+            return node;
         }
         
-        // 플레이어가 분할 공간 밖에 있음
+        foreach (var child in node.ChildNodes)
+        {
+            if (CheckObjectInNode(player.position, child) == true)
+            {
+                return GetCurrentNode(child);
+            }
+        }
+
         return null;
     }
 
