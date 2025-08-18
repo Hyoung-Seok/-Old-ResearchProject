@@ -10,7 +10,7 @@ public class QNode : MonoBehaviour
 
     public Vector2 LeftBottom => leftBottom;
     public Vector2 RightTop => rightTop;
-    
+
     public List<int> IncludeObjectIndex = new List<int>();
     public QNode[] ChildNodes = null;
 
@@ -22,22 +22,18 @@ public class QNode : MonoBehaviour
         rightTop = rt;
     }
 
-    public void UpdateIncludeObject(List<IQuadObject> objList)
-    {
-        _includeObject = new List<IQuadObject>();
-
-        for (var i = 0; i < IncludeObjectIndex.Count; ++i)
-        {
-            _includeObject.Add(objList[IncludeObjectIndex[i]]);
-        }
-    }
-
     public void SetStateIncludeObject(bool isEnable)
     {
         foreach (var obj in _includeObject)
         {
-            if(isEnable == true) obj.EnableObject();
+            if (isEnable == true) obj.EnableObject();
             else obj.DisableObject();
         }
+    }
+
+    public void CacheObject(List<IQuadObject> objList)
+    {
+        _includeObject = new List<IQuadObject>();
+        IncludeObjectIndex.ForEach(i => _includeObject.Add(objList[i]));
     }
 }

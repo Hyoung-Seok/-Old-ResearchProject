@@ -13,29 +13,14 @@ public class QuadTreeManager : MonoBehaviour
     public QNode RootNode => rootNode;
     private QNode _prevNode;
 
+    private List<IQuadObject> _objList = null;
+
     private void Start()
     {
-        var objList = objectSpawner.GetSpawnObjectsOrNull();
+        _objList = objectSpawner.GetSpawnObjectsOrNull();
+        if (_objList == null) return;
         
-        var stack = new Stack<QNode>();
-        stack.Push(RootNode);
-
-        while (stack.Count > 0)
-        {
-            var node = stack.Pop();
-
-            if (node.ChildNodes.Length != 0)
-            {
-                for (var i = 0; i < 4; ++i)
-                {
-                    stack.Push(node.ChildNodes[i]);
-                }
-                
-                continue;
-            }
-            
-            node.UpdateIncludeObject(objList);
-        }
+        CacheAllLeftNode(RootNode);
     }
 
     private void Update()
@@ -43,7 +28,7 @@ public class QuadTreeManager : MonoBehaviour
         var currentNode = GetCurrentNode(RootNode);
 
         if (_prevNode == currentNode || currentNode == null) return;
-        if(_prevNode != null) _prevNode.SetStateIncludeObject(false);
+        if (_prevNode != null) _prevNode.SetStateIncludeObject(false);
 
         _prevNode = currentNode;
         currentNode.SetStateIncludeObject(true);
@@ -53,8 +38,8 @@ public class QuadTreeManager : MonoBehaviour
     {
         if(includeCount <= 0) return;
         
-        var objList = objectSpawner.GetSpawnObjectsOrNull();
-        if (objList == null) return;
+        _objList = objectSpawner.GetSpawnObjectsOrNull();
+        if (_objList == null) return;
         
         SetRootNode();
         
@@ -65,9 +50,9 @@ public class QuadTreeManager : MonoBehaviour
         {
             var node = stack.Pop();
 
-            for (var i = 0; i < objList.Count; ++i)
+            for (var i = 0; i < _objList.Count; ++i)
             {
-                if (CheckObjectInNode(((MonoBehaviour)objList[i]).transform.position, node) == true)
+                if (CheckObjectInNode(((MonoBehaviour)_objList[i]).transform.position, node) == true)
                 {
                     node.IncludeObjectIndex.Add(i);  
                 }
@@ -166,5 +151,19 @@ public class QuadTreeManager : MonoBehaviour
     private Vector2 ConvertVector3ToVector2(Vector3 pos)
     {
         return new Vector2(pos.x, pos.z);
+    }
+
+    private void CacheAllLeftNode(QNode node)
+    {
+        if (node.ChildNodes == null || node.ChildNodes.Length == 0)
+        {
+            node.CacheObject(_objList);
+            return;
+        }
+
+        foreach (var child in node.ChildNodes)
+        {
+            CacheAllLeftNode(child);
+        }
     }
 }
