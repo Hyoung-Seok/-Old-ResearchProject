@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class EnemyObject : MonoBehaviour, IQuadObject
 {
+    [Header("Setting")] 
+    [SerializeField] private bool ignoreQuadTree;
+    
     [Header("Mat")] 
     [SerializeField] private Material enableMat;
     [SerializeField] private Material disableMat;
@@ -13,6 +16,11 @@ public class EnemyObject : MonoBehaviour, IQuadObject
     private void Start()
     {
         _renderer = gameObject.GetComponent<Renderer>();
+
+        if (ignoreQuadTree == true)
+        {
+            EnableObject();
+        }
     }
 
     private void Update()
@@ -34,7 +42,10 @@ public class EnemyObject : MonoBehaviour, IQuadObject
 
     private void PerformanceTestFunction()
     {
-        var obj = new GameObject("Empty");
-        Destroy(obj);
+        for (var i = 0; i < 100; ++i)
+        {
+            var obj = new GameObject("Empty");
+            Destroy(obj);
+        }
     }
 }
