@@ -42,9 +42,9 @@ public class GimbalLock : MonoBehaviour
 
         axis.eulerAngles = objectTF.eulerAngles;
         
-        axisObject[0].localRotation = Quaternion.Euler(value, 0f, 0f); // X축
-        axisObject[1].localRotation = Quaternion.Euler(0f, value, 0f); // Y축
-        axisObject[2].localRotation = Quaternion.Euler(0f, 0f, value); // Z축
+        axisObject[0].localRotation = Quaternion.Euler(0f, value, 0f); 
+        axisObject[1].localRotation = Quaternion.Euler(value, 0f, 0f); 
+        axisObject[2].localRotation = Quaternion.Euler(0f, 0f, value);
     }
 }
 
