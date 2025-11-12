@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ui="UnityEngine.UIElements"
-    xmlns:uie="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
->
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/2.Scripts/UnityStudy/TestWindow.uss?fileID=7433441132597879392&amp;guid=bc4b8c750455c7b4ba47d45eb3f56de7&amp;type=3#TestWindow" />
-	<ui:Label text="Hello World! From UXML" />
-	<ui:Label class="custom-label" text="Hello World! With Style" />
-
+    <ui:VisualElement name="Main" style="flex-grow: 1; background-color: rgb(255, 255, 255); flex-direction: column; align-items: stretch; justify-content: flex-start; align-self: stretch;">
+        <ui:Label text="Hello" name="TextInfo" />
+        <ui:Button text="Button" name="TestButton" />
+    </ui:VisualElement>
+    <ui:VisualElement name="Sub" style="flex-grow: 1; background-color: rgb(144, 144, 144);">
+        <ui:Toggle label="Toggle" />
+        <ui:Toggle label="Toggle" />
+    </ui:VisualElement>
 </ui:UXML>
